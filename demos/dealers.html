@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合成经营示例 五家 T2 横向对比</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-soft: #fbfcfd;
+      --text: #111827;
+      --muted: #667085;
+      --faint: #98a2b3;
+      --border: #e4e7ec;
+      --line: #eef0f3;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --amber: #f59e0b;
+      --red: #dc2626;
+      --teal: #0891b2;
+      --ink: #0f172a;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    button, select, input { font: inherit; }
+    button { color: inherit; }
+
+    .shell {
+      width: min(1240px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.1;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .total-chip {
+      min-width: 270px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: grid;
+      gap: 4px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    }
+
+    .total-chip span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .total-chip strong {
+      font-size: 25px;
+      line-height: 1.1;
+      font-weight: 760;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 26px rgba(15, 23, 42, 0.035);
+      margin-top: 16px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 740;
+    }
+
+    .panel-body { padding: 18px 20px 20px; }
+
+    .toolbar {
+      padding: 14px 16px;
+      display: block;
+    }
+
+    .control-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+      margin-bottom: 8px;
+    }
+
+    .store-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .store-toggle {
+      min-height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 10px 5px 8px;
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      background: var(--surface-soft);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .store-toggle input { accent-color: var(--blue); }
+    .swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .segmented {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .segmented button,
+    .legend-button,
+    .legend-action {
+      min-height: 34px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      border-radius: 999px;
+      padding: 6px 11px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 680;
+      transition: border-color .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .segmented button.active,
+    .legend-button.active,
+    .legend-action.active {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .legend-button.muted {
+      opacity: .38;
+      text-decoration: line-through;
+    }
+
+    .legend-action {
+      min-height: 30px;
+      padding: 5px 10px;
+    }
+
+    .expense-tools {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .expense-solo-field {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .expense-solo-select {
+      min-width: 190px;
+    }
+
+    .chart-area {
+      display: block;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr) 128px;
+      gap: 14px;
+      align-items: center;
+      border: 0;
+      background: transparent;
+      width: 100%;
+      padding: 5px 0;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .bar-row.is-active .bar-label { color: var(--ink); font-weight: 780; }
+    .bar-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 680;
+      white-space: nowrap;
+    }
+
+    .bar-value {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 720;
+    }
+
+    .bar-track {
+      height: 28px;
+      background: #f0f2f5;
+      border: 1px solid #e8ebef;
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      left: var(--left);
+      width: max(var(--width), 2px);
+      top: 4px;
+      bottom: 4px;
+      border-radius: 999px;
+      background: var(--color);
+      min-width: 2px;
+    }
+
+    .zero-line {
+      position: absolute;
+      left: var(--zero);
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(15, 23, 42, .22);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      min-width: 980px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 10px;
+      text-align: right;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+    th {
+      background: #f8fafc;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 760;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th button {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      color: inherit;
+      font-weight: inherit;
+    }
+
+    tbody tr { cursor: pointer; }
+    tbody tr:hover td { background: #fafafa; }
+    tbody tr.is-active td {
+      background: #f2f6ff;
+      font-weight: 720;
+    }
+
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+    .muted { color: var(--muted); }
+
+    .heatmap {
+      display: grid;
+      grid-template-columns: 86px repeat(5, minmax(96px, 1fr));
+      gap: 7px;
+      min-width: 680px;
+    }
+
+    .heat-head,
+    .heat-store,
+    .heat-cell {
+      border-radius: var(--radius);
+      min-height: 58px;
+      display: grid;
+      align-content: center;
+      padding: 8px 9px;
+      border: 1px solid transparent;
+    }
+
+    .heat-head {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 780;
+      min-height: 38px;
+      background: #f8fafc;
+      text-align: center;
+    }
+
+    .heat-store {
+      background: #f8fafc;
+      color: var(--text);
+      font-weight: 780;
+      font-size: 13px;
+      cursor: pointer;
+      border-color: var(--border);
+    }
+
+    .heat-cell {
+      font-size: 13px;
+      text-align: center;
+      font-weight: 760;
+      font-variant-numeric: tabular-nums;
+      color: #1f2937;
+      cursor: pointer;
+      border-color: rgba(255,255,255,.45);
+    }
+
+    .heat-cell small {
+      color: rgba(31, 41, 55, .66);
+      font-size: 11px;
+      font-weight: 640;
+      margin-top: 2px;
+    }
+
+    .chart-svg {
+      width: 100%;
+      min-height: 330px;
+      display: block;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .point { cursor: pointer; }
+    .point text {
+      font-size: 12px;
+      fill: #344054;
+      font-weight: 720;
+    }
+
+    .scatter-legend {
+      margin: 0 0 10px;
+    }
+
+    .expense-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stack-list,
+    .activity-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stack-row,
+    .activity-row {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr) 120px;
+      gap: 12px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .stack-track {
+      height: 30px;
+      background: #f0f2f5;
+      border: 1px solid #e8ebef;
+      border-radius: 999px;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stack-seg {
+      height: 100%;
+      min-width: 1px;
+      background: var(--color);
+      cursor: crosshair;
+      transition: filter .14s ease, opacity .14s ease;
+    }
+
+    .stack-seg:hover,
+    .stack-seg:focus-visible {
+      filter: brightness(.88) saturate(1.12);
+      opacity: .92;
+      outline: 2px solid rgba(17, 24, 39, .18);
+      outline-offset: -2px;
+    }
+
+    .stack-percent {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      border: 1px solid rgba(15, 23, 42, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .88);
+      color: var(--ink);
+      padding: 1px 7px;
+      font-size: 12px;
+      font-weight: 780;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.35;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+    }
+
+    .chart-tooltip {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 30;
+      width: max-content;
+      max-width: min(300px, calc(100vw - 24px));
+      pointer-events: none;
+      opacity: 0;
+      transform: translate3d(-9999px, -9999px, 0);
+      transition: opacity .12s ease;
+      background: rgba(15, 23, 42, .96);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .24);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .chart-tooltip.is-visible {
+      opacity: 1;
+    }
+
+    .tooltip-title {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .tooltip-title span {
+      color: rgba(255, 255, 255, .68);
+      font-weight: 700;
+    }
+
+    .tooltip-grid {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 5px 18px;
+      align-items: baseline;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tooltip-grid span {
+      color: rgba(255, 255, 255, .66);
+    }
+
+    .tooltip-grid strong {
+      justify-self: end;
+      font-weight: 760;
+    }
+
+    .activity-track {
+      height: 28px;
+      background: #f0f2f5;
+      border: 1px solid #e8ebef;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .activity-fill {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 999px;
+      width: var(--width);
+      background: var(--color);
+    }
+
+    .metric-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .metric-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #ffffff;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    .metric-chip b {
+      color: var(--ink);
+      font-weight: 780;
+    }
+
+    .activity-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(0, 560px);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .activity-compare {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .traffic-sales-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(0, 560px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .activity-summary,
+    .traffic-summary {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .activity-summary-head,
+    .traffic-summary-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .traffic-row {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr) 132px;
+      gap: 10px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .traffic-track {
+      height: 24px;
+      border: 1px solid #e8ebef;
+      border-radius: 999px;
+      background: #f0f2f5;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .traffic-fill {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      bottom: 4px;
+      width: var(--width);
+      border-radius: 999px;
+      background: var(--color);
+    }
+
+    .traffic-value {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .traffic-value strong,
+    .traffic-value span {
+      display: block;
+    }
+
+    .traffic-value strong {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .traffic-value span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .subsection-title {
+      margin: 0 0 12px;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 760;
+    }
+
+    .activity-matrix {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    .activity-matrix-wrap {
+      width: min(100%, 560px);
+      justify-self: start;
+      height: 100%;
+    }
+
+    .activity-matrix th,
+    .activity-matrix td {
+      padding: 7px 5px;
+      white-space: normal;
+    }
+
+    .activity-matrix th {
+      text-align: center;
+    }
+
+    .activity-matrix th:first-child {
+      text-align: left;
+      width: 64px;
+    }
+
+    .activity-matrix td:first-child {
+      font-weight: 780;
+      padding-right: 12px;
+    }
+
+    .activity-cell {
+      text-align: center;
+      border-left: 2px solid var(--store-color);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--store-color) 7%, transparent), transparent 70%);
+    }
+
+    .activity-cell strong {
+      display: block;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 780;
+    }
+
+    .activity-cell span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10.5px;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .select {
+      min-height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 0 10px;
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .conclusion-panel {
+      border-color: #dbe3f0;
+    }
+
+    .conclusion-panel .panel-body {
+      padding-top: 14px;
+    }
+
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .store-insights {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .insight,
+    .store-insight {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-width: 0;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    }
+
+    .insight {
+      min-height: 94px;
+    }
+
+    .store-insight {
+      min-height: 150px;
+      border-top: 3px solid var(--border);
+    }
+
+    .insight h3,
+    .store-insight h3 {
+      margin: 0 0 7px;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 760;
+    }
+
+    .store-insight h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .store-insight-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .store-status {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .insight p,
+    .store-insight p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .store-insight p + p {
+      margin-top: 5px;
+    }
+
+    .insight strong {
+      color: var(--ink);
+      font-weight: 780;
+    }
+
+    .store-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+
+    .store-mini-grid span {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.15;
+    }
+
+    .store-mini-grid b {
+      display: block;
+      margin-top: 2px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .store-section-title {
+      margin-top: 16px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 980px) {
+      .topbar,
+      .toolbar,
+      .activity-layout,
+      .traffic-sales-layout,
+      .grid-2,
+      .insights,
+      .store-insights {
+        grid-template-columns: 1fr;
+      }
+      .total-chip { min-width: 0; }
+      .bar-row,
+      .stack-row,
+      .activity-row,
+      .traffic-row {
+        grid-template-columns: 68px minmax(0, 1fr) 96px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100vw - 20px, 1240px); padding-top: 18px; }
+      .panel-head, .panel-body { padding-left: 14px; padding-right: 14px; }
+      .toolbar { padding: 12px; }
+      .bar-row,
+      .stack-row,
+      .activity-row,
+      .traffic-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .bar-value { text-align: left; }
+      .heatmap { grid-template-columns: 80px repeat(5, 92px); }
+    }
+  </style>
+<link rel="icon" href="data:,"><meta name="robots" content="noindex,nofollow"><style>.portfolio-banner{position:relative;z-index:100;display:flex;align-items:center;gap:20px;justify-content:space-between;padding:13px 24px;background:#e9f1f2;color:#244b55;font:13px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;border-bottom:1px solid #c6d9dd}.portfolio-banner a{font-weight:700;color:#244b55;text-decoration:underline;white-space:nowrap}.portfolio-banner span{text-align:right}html{overflow-x:clip}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #1f8595;outline-offset:3px}@media(max-width:600px){.portfolio-banner{padding:12px 16px;align-items:flex-start;gap:8px;flex-direction:column}.portfolio-banner span{text-align:left;font-size:12px}}</style></head>
+<body><aside class="portfolio-banner"><a href="../budget.html">← 返回项目说明</a><span><b>合成数据演示</b> · 名称、金额、指标及费率均为独立构造的示例，不反映实际业务。</span></aside>
+<main class="shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">DEALER PERFORMANCE · SYNTHETIC</p>
+      <h1>五家 T2 横向对比</h1>
+    </div>
+    <div class="total-chip">
+      <span>五家合计确收</span>
+      <strong id="portfolioRevenue">-</strong>
+      <span id="portfolioProfit">-</span>
+    </div>
+  </header>
+
+  <section class="panel toolbar">
+    <div>
+      <div class="control-label">店铺</div>
+      <div class="store-filters" id="storeFilters"></div>
+    </div>
+  </section>
+
+  <section class="panel conclusion-panel">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title">横向结论</h2>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="insights" id="insights"></div>
+      <h3 class="subsection-title store-section-title">单店结论</h3>
+      <div class="store-insights" id="storeInsights"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title">核心指标</h2>
+      </div>
+      <div class="segmented" id="metricSelector"></div>
+    </div>
+    <div class="panel-body">
+      <div class="chart-area">
+        <div class="bar-list" id="barChart"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title">全店指标表</h2>
+      </div>
+    </div>
+    <div class="panel-body table-wrap">
+      <table>
+        <thead><tr id="summaryHead"></tr></thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="grid-2">
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">品类矩阵</h2>
+        </div>
+        <select class="select" id="heatMetric"></select>
+      </div>
+      <div class="panel-body table-wrap">
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">利润与费用象限</h2>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="metric-legend scatter-legend" id="scatterLegend">
+          <span class="metric-chip"><b>横轴</b> TTL费用率</span>
+          <span class="metric-chip"><b>纵轴</b> 净利率</span>
+          <span class="metric-chip"><b>气泡大小</b> 确收规模</span>
+          <span class="metric-chip"><b>颜色</b> 店铺</span>
+          <span class="metric-chip"><b>虚线</b> 0%净利线</span>
+        </div>
+        <svg class="chart-svg" id="scatter" viewBox="0 0 620 360" role="img" aria-label="利润与费用象限"></svg>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title">费用结构</h2>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="expense-legend" id="expenseLegend"></div>
+      <div class="stack-list" id="expenseBars"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title">活动投入</h2>
+      </div>
+      <select class="select" id="activityMetric"></select>
+    </div>
+    <div class="panel-body">
+      <div class="metric-legend" id="activityLegend"></div>
+      <div class="activity-layout">
+        <div class="activity-summary">
+          <div class="activity-summary-head">
+            <span>活动概览</span>
+            <span id="activityBarsTotal">-</span>
+          </div>
+          <div class="activity-list" id="activityBars"></div>
+        </div>
+        <div class="table-wrap activity-matrix-wrap">
+          <table class="activity-matrix">
+            <thead id="activityDetailHead"></thead>
+            <tbody id="activityDetail"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="activity-compare">
+        <h3 class="subsection-title">UV 与 SO</h3>
+        <div class="metric-legend" id="trafficSalesLegend"></div>
+        <div class="traffic-sales-layout">
+          <div class="traffic-summary" id="trafficSalesSummary"></div>
+          <div class="table-wrap activity-matrix-wrap">
+            <table class="activity-matrix">
+              <thead id="trafficSalesHead"></thead>
+              <tbody id="trafficSalesDetail"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<script>
+const reportData = {"synthetic":true,"generatedAt":"2026-09-23","lobOrder":["iPhone","iPad","Mac","AirPods","Watch"],"heatmapLobOrder":["iPhone","iPad","Mac","AirPods","Watch"],"expenseOrder":["平台佣金","支付通道费","平台积分服务费","推广投流","淘宝客","分期免息","会员优惠","补贴周转","物流","资金成本","运营成本"],"activityOrder":["直降（活动补贴）","平台积分/积分抵扣","以旧换新（商家出资）","会员优惠 商家出资","免息分期（商家贴息）-"],"stores":[{"store":"示例经销商 A","color":"#2563eb","sourceReport":"合成示例","summary":{"total_revenue":6654000,"total_expense_rate":0.10499278629395854,"total_net_profit":654229.9999999999,"overall_net_profit_rate":0.09832131048993085,"total_act_cost":223559.04000000004,"total_traffic_cost":133080.0,"overall_traffic_rate":0.02,"overall_traffic_roi":50.0,"expense_structure":{"平台佣金":146894.025974026,"支付通道费":22034.103896103898,"平台积分服务费":29378.805194805198,"推广投流":133080.0,"淘宝客":29378.805194805198,"分期免息":58757.610389610396,"会员优惠":36723.5064935065,"补贴周转":29378.805194805198,"物流":88136.41558441559,"资金成本":51412.9090909091,"运营成本":73447.012987013,"TTL费用":698622.0000000001},"total_volume":2150,"total_ttl_cost":698622.0000000001,"total_act_rate":0.033597691614066734,"asp":3094.8837209302324,"traffic_so":2150,"total_uv":78600,"traffic_conversion_rate":0.027353689567430027,"overall_conversion_rate":0.027353689567430027},"expenseComponents":{"平台佣金":146894.025974026,"支付通道费":22034.103896103898,"平台积分服务费":29378.805194805198,"推广投流":133080.0,"淘宝客":29378.805194805198,"分期免息":58757.610389610396,"会员优惠":36723.5064935065,"补贴周转":29378.805194805198,"物流":88136.41558441559,"资金成本":51412.9090909091,"运营成本":73447.012987013},"data":[{"LOB":"iPhone","Traffic_Cost":31500.0,"Volume":350,"Revenue":1575000,"TTL_Cost":157500.0,"Net_Val":141750.0,"Gross_Val":299250.0,"Gross_Raw_Val":283500.0,"MDF_Actual_Val":15750.0,"Gross_Rate":0.19,"Gross_Raw_Rate":0.18,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1575000,"TTL_Rate":0.1,"Net_Rate":0.09,"Traffic_Rate":0.02,"UV":10500,"Revenue_Share":0.23669972948602344,"ASP":4500.0,"Traffic_ROI":50.0,"Conversion_Rate":0.03333333333333333,"SO_UV_SO":350,"SO_UV_Rev":1575000,"SO_UV_UV":10500,"SO_UV_CVR":0.03333333333333333},{"LOB":"iPad","Traffic_Cost":21840.0,"Volume":390,"Revenue":1092000,"TTL_Cost":112476.00000000001,"Net_Val":103739.99999999999,"Gross_Val":216216.0,"Gross_Raw_Val":205296.0,"MDF_Actual_Val":10920.0,"Gross_Rate":0.198,"Gross_Raw_Rate":0.188,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1092000,"TTL_Rate":0.10300000000000001,"Net_Rate":0.09499999999999999,"Traffic_Rate":0.02,"UV":12870,"Revenue_Share":0.16411181244364292,"ASP":2800.0,"Traffic_ROI":50.0,"Conversion_Rate":0.030303030303030304,"SO_UV_SO":390,"SO_UV_Rev":1092000,"SO_UV_UV":12870,"SO_UV_CVR":0.030303030303030304},{"LOB":"Mac","Traffic_Cost":55900.0,"Volume":430,"Revenue":2795000,"TTL_Cost":296270.00000000006,"Net_Val":279499.99999999994,"Gross_Val":575770.0,"Gross_Raw_Val":547820.0,"MDF_Actual_Val":27950.0,"Gross_Rate":0.206,"Gross_Raw_Rate":0.196,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":2795000,"TTL_Rate":0.10600000000000002,"Net_Rate":0.09999999999999998,"Traffic_Rate":0.02,"UV":15480,"Revenue_Share":0.4200480913736099,"ASP":6500.0,"Traffic_ROI":50.0,"Conversion_Rate":0.027777777777777776,"SO_UV_SO":430,"SO_UV_Rev":2795000,"SO_UV_UV":15480,"SO_UV_CVR":0.027777777777777776},{"LOB":"AirPods","Traffic_Cost":7520.0,"Volume":470,"Revenue":376000,"TTL_Cost":40984.00000000001,"Net_Val":39479.99999999999,"Gross_Val":80464.0,"Gross_Raw_Val":76704.0,"MDF_Actual_Val":3760.0,"Gross_Rate":0.214,"Gross_Raw_Rate":0.204,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":376000,"TTL_Rate":0.10900000000000001,"Net_Rate":0.10499999999999998,"Traffic_Rate":0.02,"UV":18330,"Revenue_Share":0.05650736399158401,"ASP":800.0,"Traffic_ROI":50.0,"Conversion_Rate":0.02564102564102564,"SO_UV_SO":470,"SO_UV_Rev":376000,"SO_UV_UV":18330,"SO_UV_CVR":0.02564102564102564},{"LOB":"Watch","Traffic_Cost":16320.0,"Volume":510,"Revenue":816000,"TTL_Cost":91392.0,"Net_Val":89760.0,"Gross_Val":181152.0,"Gross_Raw_Val":172992.0,"MDF_Actual_Val":8160.0,"Gross_Rate":0.222,"Gross_Raw_Rate":0.212,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":816000,"TTL_Rate":0.112,"Net_Rate":0.11,"Traffic_Rate":0.02,"UV":21420,"Revenue_Share":0.12263300270513977,"ASP":1600.0,"Traffic_ROI":50.0,"Conversion_Rate":0.023809523809523808,"SO_UV_SO":510,"SO_UV_Rev":816000,"SO_UV_UV":21420,"SO_UV_CVR":0.023809523809523808}],"actData":[{"LOB":"iPhone","Total_Act_Cost":50400.0,"Act_Expense_Rate":0.032,"直降（活动补贴）_cost":17640.0,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":10080.0,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":10080.0,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":7560.0,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":5040.0,"免息分期（商家贴息）-_pen":0.15},{"LOB":"iPad","Total_Act_Cost":35992.32000000001,"Act_Expense_Rate":0.03296,"直降（活动补贴）_cost":12597.312000000002,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":7198.464000000002,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":7198.464000000002,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":5398.848000000001,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":3599.232000000001,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Mac","Total_Act_Cost":94806.40000000002,"Act_Expense_Rate":0.033920000000000006,"直降（活动补贴）_cost":33182.240000000005,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":18961.280000000006,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":18961.280000000006,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":14220.960000000003,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":9480.640000000003,"免息分期（商家贴息）-_pen":0.15},{"LOB":"AirPods","Total_Act_Cost":13114.880000000003,"Act_Expense_Rate":0.03488000000000001,"直降（活动补贴）_cost":4590.2080000000005,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":2622.9760000000006,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":2622.9760000000006,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":1967.2320000000004,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":1311.4880000000003,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Watch","Total_Act_Cost":29245.440000000002,"Act_Expense_Rate":0.035840000000000004,"直降（活动补贴）_cost":10235.904,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":5849.088000000001,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":5849.088000000001,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":4386.816,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":2924.5440000000003,"免息分期（商家贴息）-_pen":0.15}]},{"store":"示例经销商 B","color":"#087f8c","sourceReport":"合成示例","summary":{"total_revenue":7788000,"total_expense_rate":0.10992912172573191,"total_net_profit":679231.9999999999,"overall_net_profit_rate":0.08721520287621981,"total_act_cost":273960.96,"total_traffic_cost":179124.0,"overall_traffic_rate":0.023,"overall_traffic_roi":43.47826086956522,"expense_structure":{"平台佣金":175845.19480519483,"支付通道费":26376.779220779223,"平台积分服务费":35169.03896103896,"推广投流":179124.0,"淘宝客":35169.03896103896,"分期免息":70338.07792207792,"会员优惠":43961.29870129871,"补贴周转":35169.03896103896,"物流":105507.11688311689,"资金成本":61545.8181818182,"运营成本":87922.59740259741,"TTL费用":856128.0000000001},"total_volume":2500,"total_ttl_cost":856128.0000000001,"total_act_rate":0.03517731895223421,"asp":3115.2,"traffic_so":2500,"total_uv":103700,"traffic_conversion_rate":0.024108003857280617,"overall_conversion_rate":0.024108003857280617},"expenseComponents":{"平台佣金":175845.19480519483,"支付通道费":26376.779220779223,"平台积分服务费":35169.03896103896,"推广投流":179124.0,"淘宝客":35169.03896103896,"分期免息":70338.07792207792,"会员优惠":43961.29870129871,"补贴周转":35169.03896103896,"物流":105507.11688311689,"资金成本":61545.8181818182,"运营成本":87922.59740259741},"data":[{"LOB":"iPhone","Traffic_Cost":43470.0,"Volume":420,"Revenue":1890000,"TTL_Cost":198450.00000000003,"Net_Val":149309.99999999997,"Gross_Val":347760.0,"Gross_Raw_Val":328860.0,"MDF_Actual_Val":18900.0,"Gross_Rate":0.184,"Gross_Raw_Rate":0.174,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1890000,"TTL_Rate":0.10500000000000001,"Net_Rate":0.07899999999999999,"Traffic_Rate":0.023,"UV":14700,"Revenue_Share":0.24268104776579352,"ASP":4500.0,"Traffic_ROI":43.47826086956522,"Conversion_Rate":0.02857142857142857,"SO_UV_SO":420,"SO_UV_Rev":1890000,"SO_UV_UV":14700,"SO_UV_CVR":0.02857142857142857},{"LOB":"iPad","Traffic_Cost":29624.0,"Volume":460,"Revenue":1288000,"TTL_Cost":139104.00000000003,"Net_Val":108191.99999999997,"Gross_Val":247296.0,"Gross_Raw_Val":234416.0,"MDF_Actual_Val":12880.0,"Gross_Rate":0.192,"Gross_Raw_Rate":0.182,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1288000,"TTL_Rate":0.10800000000000003,"Net_Rate":0.08399999999999998,"Traffic_Rate":0.023,"UV":17480,"Revenue_Share":0.16538263995891114,"ASP":2800.0,"Traffic_ROI":43.47826086956522,"Conversion_Rate":0.02631578947368421,"SO_UV_SO":460,"SO_UV_Rev":1288000,"SO_UV_UV":17480,"SO_UV_CVR":0.02631578947368421},{"LOB":"Mac","Traffic_Cost":74750.0,"Volume":500,"Revenue":3250000,"TTL_Cost":360750.00000000006,"Net_Val":289249.99999999994,"Gross_Val":650000.0,"Gross_Raw_Val":617500.0,"MDF_Actual_Val":32500.0,"Gross_Rate":0.2,"Gross_Raw_Rate":0.19,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":3250000,"TTL_Rate":0.11100000000000002,"Net_Rate":0.08899999999999998,"Traffic_Rate":0.023,"UV":20500,"Revenue_Share":0.41730868002054444,"ASP":6500.0,"Traffic_ROI":43.47826086956522,"Conversion_Rate":0.024390243902439025,"SO_UV_SO":500,"SO_UV_Rev":3250000,"SO_UV_UV":20500,"SO_UV_CVR":0.024390243902439025},{"LOB":"AirPods","Traffic_Cost":9936.0,"Volume":540,"Revenue":432000,"TTL_Cost":49248.00000000001,"Net_Val":40607.99999999998,"Gross_Val":89855.99999999999,"Gross_Raw_Val":85535.99999999999,"MDF_Actual_Val":4320.0,"Gross_Rate":0.20799999999999996,"Gross_Raw_Rate":0.19799999999999995,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":432000,"TTL_Rate":0.11400000000000002,"Net_Rate":0.09399999999999994,"Traffic_Rate":0.023,"UV":23760,"Revenue_Share":0.05546995377503852,"ASP":800.0,"Traffic_ROI":43.47826086956522,"Conversion_Rate":0.022727272727272728,"SO_UV_SO":540,"SO_UV_Rev":432000,"SO_UV_UV":23760,"SO_UV_CVR":0.022727272727272728},{"LOB":"Watch","Traffic_Cost":21344.0,"Volume":580,"Revenue":928000,"TTL_Cost":108576.0,"Net_Val":91872.0,"Gross_Val":200448.0,"Gross_Raw_Val":191168.0,"MDF_Actual_Val":9280.0,"Gross_Rate":0.216,"Gross_Raw_Rate":0.206,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":928000,"TTL_Rate":0.117,"Net_Rate":0.099,"Traffic_Rate":0.023,"UV":27260,"Revenue_Share":0.11915767847971238,"ASP":1600.0,"Traffic_ROI":43.47826086956522,"Conversion_Rate":0.02127659574468085,"SO_UV_SO":580,"SO_UV_Rev":928000,"SO_UV_UV":27260,"SO_UV_CVR":0.02127659574468085}],"actData":[{"LOB":"iPhone","Total_Act_Cost":63504.00000000001,"Act_Expense_Rate":0.033600000000000005,"直降（活动补贴）_cost":22226.4,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":12700.800000000003,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":12700.800000000003,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":9525.6,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":6350.4000000000015,"免息分期（商家贴息）-_pen":0.15},{"LOB":"iPad","Total_Act_Cost":44513.28000000001,"Act_Expense_Rate":0.03456000000000001,"直降（活动补贴）_cost":15579.648000000003,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":8902.656000000003,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":8902.656000000003,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":6676.992000000002,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":4451.328000000001,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Mac","Total_Act_Cost":115440.00000000001,"Act_Expense_Rate":0.03552,"直降（活动补贴）_cost":40404.0,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":23088.000000000004,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":23088.000000000004,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":17316.0,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":11544.000000000002,"免息分期（商家贴息）-_pen":0.15},{"LOB":"AirPods","Total_Act_Cost":15759.360000000002,"Act_Expense_Rate":0.036480000000000005,"直降（活动补贴）_cost":5515.776000000001,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":3151.8720000000008,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":3151.8720000000008,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":2363.9040000000005,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":1575.9360000000004,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Watch","Total_Act_Cost":34744.32,"Act_Expense_Rate":0.03744,"直降（活动补贴）_cost":12160.511999999999,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":6948.8640000000005,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":6948.8640000000005,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":5211.648,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":3474.4320000000002,"免息分期（商家贴息）-_pen":0.15}]},{"store":"示例经销商 C","color":"#d17a22","sourceReport":"合成示例","summary":{"total_revenue":8922000,"total_expense_rate":0.11488164088769334,"total_net_profit":679285.9999999999,"overall_net_profit_rate":0.07613606814615556,"total_act_cost":327991.68,"total_traffic_cost":231972.00000000003,"overall_traffic_rate":0.026000000000000002,"overall_traffic_roi":38.46153846153846,"expense_structure":{"平台佣金":205974.54545454547,"支付通道费":30896.181818181816,"平台积分服务费":41194.909090909096,"推广投流":231972.00000000003,"淘宝客":41194.909090909096,"分期免息":82389.81818181819,"会员优惠":51493.63636363637,"补贴周转":41194.909090909096,"物流":123584.72727272726,"资金成本":72091.09090909091,"运营成本":102987.27272727274,"TTL费用":1024974.0},"total_volume":2850,"total_ttl_cost":1024974.0,"total_act_rate":0.03676212508406187,"asp":3130.5263157894738,"traffic_so":2850,"total_uv":132300,"traffic_conversion_rate":0.021541950113378686,"overall_conversion_rate":0.021541950113378686},"expenseComponents":{"平台佣金":205974.54545454547,"支付通道费":30896.181818181816,"平台积分服务费":41194.909090909096,"推广投流":231972.00000000003,"淘宝客":41194.909090909096,"分期免息":82389.81818181819,"会员优惠":51493.63636363637,"补贴周转":41194.909090909096,"物流":123584.72727272726,"资金成本":72091.09090909091,"运营成本":102987.27272727274},"data":[{"LOB":"iPhone","Traffic_Cost":57330.00000000001,"Volume":490,"Revenue":2205000,"TTL_Cost":242550.0,"Net_Val":149939.99999999994,"Gross_Val":392489.99999999994,"Gross_Raw_Val":370439.99999999994,"MDF_Actual_Val":22050.0,"Gross_Rate":0.17799999999999996,"Gross_Raw_Rate":0.16799999999999998,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":2205000,"TTL_Rate":0.11,"Net_Rate":0.06799999999999998,"Traffic_Rate":0.026000000000000002,"UV":19600,"Revenue_Share":0.24714189643577672,"ASP":4500.0,"Traffic_ROI":38.46153846153846,"Conversion_Rate":0.025,"SO_UV_SO":490,"SO_UV_Rev":2205000,"SO_UV_UV":19600,"SO_UV_CVR":0.025},{"LOB":"iPad","Traffic_Cost":38584.0,"Volume":530,"Revenue":1484000,"TTL_Cost":167692.0,"Net_Val":108332.0,"Gross_Val":276024.0,"Gross_Raw_Val":261183.99999999997,"MDF_Actual_Val":14840.0,"Gross_Rate":0.186,"Gross_Raw_Rate":0.176,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1484000,"TTL_Rate":0.113,"Net_Rate":0.073,"Traffic_Rate":0.026,"UV":22790,"Revenue_Share":0.16633041918852276,"ASP":2800.0,"Traffic_ROI":38.46153846153846,"Conversion_Rate":0.023255813953488372,"SO_UV_SO":530,"SO_UV_Rev":1484000,"SO_UV_UV":22790,"SO_UV_CVR":0.023255813953488372},{"LOB":"Mac","Traffic_Cost":96330.00000000001,"Volume":570,"Revenue":3705000,"TTL_Cost":429780.0,"Net_Val":288990.0,"Gross_Val":718770.0,"Gross_Raw_Val":681720.0,"MDF_Actual_Val":37050.0,"Gross_Rate":0.194,"Gross_Raw_Rate":0.184,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":3705000,"TTL_Rate":0.116,"Net_Rate":0.078,"Traffic_Rate":0.026000000000000002,"UV":26220,"Revenue_Share":0.4152656355077337,"ASP":6500.0,"Traffic_ROI":38.46153846153845,"Conversion_Rate":0.021739130434782608,"SO_UV_SO":570,"SO_UV_Rev":3705000,"SO_UV_UV":26220,"SO_UV_CVR":0.021739130434782608},{"LOB":"AirPods","Traffic_Cost":12688.000000000002,"Volume":610,"Revenue":488000,"TTL_Cost":58072.0,"Net_Val":40503.999999999985,"Gross_Val":98575.99999999999,"Gross_Raw_Val":93695.99999999999,"MDF_Actual_Val":4880.0,"Gross_Rate":0.20199999999999996,"Gross_Raw_Rate":0.19199999999999998,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":488000,"TTL_Rate":0.119,"Net_Rate":0.08299999999999998,"Traffic_Rate":0.026000000000000002,"UV":29890,"Revenue_Share":0.05469625644474333,"ASP":800.0,"Traffic_ROI":38.46153846153845,"Conversion_Rate":0.02040816326530612,"SO_UV_SO":610,"SO_UV_Rev":488000,"SO_UV_UV":29890,"SO_UV_CVR":0.02040816326530612},{"LOB":"Watch","Traffic_Cost":27040.000000000004,"Volume":650,"Revenue":1040000,"TTL_Cost":126880.0,"Net_Val":91519.99999999997,"Gross_Val":218399.99999999997,"Gross_Raw_Val":207999.99999999997,"MDF_Actual_Val":10400.0,"Gross_Rate":0.20999999999999996,"Gross_Raw_Rate":0.19999999999999998,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1040000,"TTL_Rate":0.122,"Net_Rate":0.08799999999999997,"Traffic_Rate":0.026000000000000002,"UV":33800,"Revenue_Share":0.1165657924232235,"ASP":1600.0,"Traffic_ROI":38.46153846153846,"Conversion_Rate":0.019230769230769232,"SO_UV_SO":650,"SO_UV_Rev":1040000,"SO_UV_UV":33800,"SO_UV_CVR":0.019230769230769232}],"actData":[{"LOB":"iPhone","Total_Act_Cost":77616.0,"Act_Expense_Rate":0.0352,"直降（活动补贴）_cost":27165.6,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":15523.2,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":15523.2,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":11642.4,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":7761.6,"免息分期（商家贴息）-_pen":0.15},{"LOB":"iPad","Total_Act_Cost":53661.44,"Act_Expense_Rate":0.036160000000000005,"直降（活动补贴）_cost":18781.504,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":10732.288,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":10732.288,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":8049.216,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":5366.144,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Mac","Total_Act_Cost":137529.6,"Act_Expense_Rate":0.03712,"直降（活动补贴）_cost":48135.36,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":27505.920000000002,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":27505.920000000002,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":20629.44,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":13752.960000000001,"免息分期（商家贴息）-_pen":0.15},{"LOB":"AirPods","Total_Act_Cost":18583.04,"Act_Expense_Rate":0.03808,"直降（活动补贴）_cost":6504.064,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":3716.608,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":3716.608,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":2787.456,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":1858.304,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Watch","Total_Act_Cost":40601.6,"Act_Expense_Rate":0.03904,"直降（活动补贴）_cost":14210.56,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":8120.32,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":8120.32,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":6090.24,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":4060.16,"免息分期（商家贴息）-_pen":0.15}]},{"store":"示例经销商 D","color":"#8559a5","sourceReport":"合成示例","summary":{"total_revenue":10056000,"total_expense_rate":0.11984486873508353,"total_net_profit":654391.9999999999,"overall_net_profit_rate":0.06507478122513921,"total_act_cost":385651.2,"total_traffic_cost":291624.0,"overall_traffic_rate":0.029,"overall_traffic_roi":34.48275862068966,"expense_structure":{"平台佣金":237282.07792207794,"支付通道费":35592.31168831168,"平台积分服务费":47456.41558441558,"推广投流":291624.0,"淘宝客":47456.41558441558,"分期免息":94912.83116883117,"会员优惠":59320.519480519484,"补贴周转":47456.41558441558,"物流":142369.24675324673,"资金成本":83048.72727272728,"运营成本":118641.03896103897,"TTL费用":1205160.0},"total_volume":3200,"total_ttl_cost":1205160.0,"total_act_rate":0.03835035799522673,"asp":3142.5,"traffic_so":3200,"total_uv":164400,"traffic_conversion_rate":0.019464720194647202,"overall_conversion_rate":0.019464720194647202},"expenseComponents":{"平台佣金":237282.07792207794,"支付通道费":35592.31168831168,"平台积分服务费":47456.41558441558,"推广投流":291624.0,"淘宝客":47456.41558441558,"分期免息":94912.83116883117,"会员优惠":59320.519480519484,"补贴周转":47456.41558441558,"物流":142369.24675324673,"资金成本":83048.72727272728,"运营成本":118641.03896103897},"data":[{"LOB":"iPhone","Traffic_Cost":73080.0,"Volume":560,"Revenue":2520000,"TTL_Cost":289800.0,"Net_Val":143639.99999999994,"Gross_Val":433439.99999999994,"Gross_Raw_Val":408239.99999999994,"MDF_Actual_Val":25200.0,"Gross_Rate":0.172,"Gross_Raw_Rate":0.16199999999999998,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":2520000,"TTL_Rate":0.115,"Net_Rate":0.056999999999999974,"Traffic_Rate":0.029,"UV":25200,"Revenue_Share":0.25059665871121717,"ASP":4500.0,"Traffic_ROI":34.48275862068966,"Conversion_Rate":0.022222222222222223,"SO_UV_SO":560,"SO_UV_Rev":2520000,"SO_UV_UV":25200,"SO_UV_CVR":0.022222222222222223},{"LOB":"iPad","Traffic_Cost":48720.0,"Volume":600,"Revenue":1680000,"TTL_Cost":198240.0,"Net_Val":104160.0,"Gross_Val":302400.0,"Gross_Raw_Val":285600.0,"MDF_Actual_Val":16800.0,"Gross_Rate":0.18,"Gross_Raw_Rate":0.17,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1680000,"TTL_Rate":0.118,"Net_Rate":0.062,"Traffic_Rate":0.029,"UV":28800,"Revenue_Share":0.16706443914081145,"ASP":2800.0,"Traffic_ROI":34.48275862068966,"Conversion_Rate":0.020833333333333332,"SO_UV_SO":600,"SO_UV_Rev":1680000,"SO_UV_UV":28800,"SO_UV_CVR":0.020833333333333332},{"LOB":"Mac","Traffic_Cost":120640.0,"Volume":640,"Revenue":4160000,"TTL_Cost":503360.00000000006,"Net_Val":278719.99999999994,"Gross_Val":782080.0,"Gross_Raw_Val":740480.0,"MDF_Actual_Val":41600.0,"Gross_Rate":0.188,"Gross_Raw_Rate":0.178,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":4160000,"TTL_Rate":0.12100000000000001,"Net_Rate":0.06699999999999999,"Traffic_Rate":0.029,"UV":32640,"Revenue_Share":0.41368337311058073,"ASP":6500.0,"Traffic_ROI":34.48275862068966,"Conversion_Rate":0.0196078431372549,"SO_UV_SO":640,"SO_UV_Rev":4160000,"SO_UV_UV":32640,"SO_UV_CVR":0.0196078431372549},{"LOB":"AirPods","Traffic_Cost":15776.0,"Volume":680,"Revenue":544000,"TTL_Cost":67456.0,"Net_Val":39168.0,"Gross_Val":106624.0,"Gross_Raw_Val":101184.0,"MDF_Actual_Val":5440.0,"Gross_Rate":0.196,"Gross_Raw_Rate":0.186,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":544000,"TTL_Rate":0.124,"Net_Rate":0.072,"Traffic_Rate":0.029,"UV":36720,"Revenue_Share":0.05409705648369133,"ASP":800.0,"Traffic_ROI":34.48275862068966,"Conversion_Rate":0.018518518518518517,"SO_UV_SO":680,"SO_UV_Rev":544000,"SO_UV_UV":36720,"SO_UV_CVR":0.018518518518518517},{"LOB":"Watch","Traffic_Cost":33408.0,"Volume":720,"Revenue":1152000,"TTL_Cost":146304.0,"Net_Val":88704.0,"Gross_Val":235008.0,"Gross_Raw_Val":223488.0,"MDF_Actual_Val":11520.0,"Gross_Rate":0.204,"Gross_Raw_Rate":0.194,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1152000,"TTL_Rate":0.127,"Net_Rate":0.077,"Traffic_Rate":0.029,"UV":41040,"Revenue_Share":0.11455847255369929,"ASP":1600.0,"Traffic_ROI":34.48275862068966,"Conversion_Rate":0.017543859649122806,"SO_UV_SO":720,"SO_UV_Rev":1152000,"SO_UV_UV":41040,"SO_UV_CVR":0.017543859649122806}],"actData":[{"LOB":"iPhone","Total_Act_Cost":92736.0,"Act_Expense_Rate":0.0368,"直降（活动补贴）_cost":32457.6,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":18547.2,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":18547.2,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":13910.4,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":9273.6,"免息分期（商家贴息）-_pen":0.15},{"LOB":"iPad","Total_Act_Cost":63436.8,"Act_Expense_Rate":0.03776,"直降（活动补贴）_cost":22202.88,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":12687.36,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":12687.36,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":9515.52,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":6343.68,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Mac","Total_Act_Cost":161075.2,"Act_Expense_Rate":0.038720000000000004,"直降（活动补贴）_cost":56376.32,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":32215.040000000005,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":32215.040000000005,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":24161.280000000002,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":16107.520000000002,"免息分期（商家贴息）-_pen":0.15},{"LOB":"AirPods","Total_Act_Cost":21585.920000000002,"Act_Expense_Rate":0.03968000000000001,"直降（活动补贴）_cost":7555.072,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":4317.184,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":4317.184,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":3237.8880000000004,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":2158.592,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Watch","Total_Act_Cost":46817.28,"Act_Expense_Rate":0.040639999999999996,"直降（活动补贴）_cost":16386.048,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":9363.456,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":9363.456,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":7022.592,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":4681.728,"免息分期（商家贴息）-_pen":0.15}]},{"store":"示例经销商 E","color":"#678044","sourceReport":"合成示例","summary":{"total_revenue":11190000,"total_expense_rate":0.12481554959785522,"total_net_profit":604550.0000000001,"overall_net_profit_rate":0.05402591599642539,"total_act_cost":446939.52,"total_traffic_cost":358080.0,"overall_traffic_rate":0.032,"overall_traffic_roi":31.25,"expense_structure":{"平台佣金":269767.7922077922,"支付通道费":40465.168831168834,"平台积分服务费":53953.55844155844,"推广投流":358080.0,"淘宝客":53953.55844155844,"分期免息":107907.11688311688,"会员优惠":67441.94805194806,"补贴周转":53953.55844155844,"物流":161860.67532467534,"资金成本":94418.7272727273,"运营成本":134883.8961038961,"TTL费用":1396686.0},"total_volume":3550,"total_ttl_cost":1396686.0,"total_act_rate":0.03994097587131368,"asp":3152.112676056338,"traffic_so":3550,"total_uv":200000,"traffic_conversion_rate":0.01775,"overall_conversion_rate":0.01775},"expenseComponents":{"平台佣金":269767.7922077922,"支付通道费":40465.168831168834,"平台积分服务费":53953.55844155844,"推广投流":358080.0,"淘宝客":53953.55844155844,"分期免息":107907.11688311688,"会员优惠":67441.94805194806,"补贴周转":53953.55844155844,"物流":161860.67532467534,"资金成本":94418.7272727273,"运营成本":134883.8961038961},"data":[{"LOB":"iPhone","Traffic_Cost":90720.0,"Volume":630,"Revenue":2835000,"TTL_Cost":340200.0,"Net_Val":130410.0,"Gross_Val":470610.0,"Gross_Raw_Val":442260.0,"MDF_Actual_Val":28350.0,"Gross_Rate":0.166,"Gross_Raw_Rate":0.156,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":2835000,"TTL_Rate":0.12,"Net_Rate":0.046,"Traffic_Rate":0.032,"UV":31500,"Revenue_Share":0.25335120643431636,"ASP":4500.0,"Traffic_ROI":31.25,"Conversion_Rate":0.02,"SO_UV_SO":630,"SO_UV_Rev":2835000,"SO_UV_UV":31500,"SO_UV_CVR":0.02},{"LOB":"iPad","Traffic_Cost":60032.0,"Volume":670,"Revenue":1876000,"TTL_Cost":230748.00000000003,"Net_Val":95675.99999999997,"Gross_Val":326424.0,"Gross_Raw_Val":307664.0,"MDF_Actual_Val":18760.0,"Gross_Rate":0.174,"Gross_Raw_Rate":0.164,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1876000,"TTL_Rate":0.12300000000000001,"Net_Rate":0.05099999999999998,"Traffic_Rate":0.032,"UV":35510,"Revenue_Share":0.16764968722073278,"ASP":2800.0,"Traffic_ROI":31.25,"Conversion_Rate":0.018867924528301886,"SO_UV_SO":670,"SO_UV_Rev":1876000,"SO_UV_UV":35510,"SO_UV_CVR":0.018867924528301886},{"LOB":"Mac","Traffic_Cost":147680.0,"Volume":710,"Revenue":4615000,"TTL_Cost":581490.0,"Net_Val":258440.00000000012,"Gross_Val":839930.0000000001,"Gross_Raw_Val":793780.0000000001,"MDF_Actual_Val":46150.0,"Gross_Rate":0.18200000000000002,"Gross_Raw_Rate":0.17200000000000001,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":4615000,"TTL_Rate":0.126,"Net_Rate":0.05600000000000002,"Traffic_Rate":0.032,"UV":39760,"Revenue_Share":0.41242180518319926,"ASP":6500.0,"Traffic_ROI":31.25,"Conversion_Rate":0.017857142857142856,"SO_UV_SO":710,"SO_UV_Rev":4615000,"SO_UV_UV":39760,"SO_UV_CVR":0.017857142857142856},{"LOB":"AirPods","Traffic_Cost":19200.0,"Volume":750,"Revenue":600000,"TTL_Cost":77400.0,"Net_Val":36600.0,"Gross_Val":114000.0,"Gross_Raw_Val":108000.0,"MDF_Actual_Val":6000.0,"Gross_Rate":0.19,"Gross_Raw_Rate":0.18,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":600000,"TTL_Rate":0.129,"Net_Rate":0.061,"Traffic_Rate":0.032,"UV":44250,"Revenue_Share":0.05361930294906166,"ASP":800.0,"Traffic_ROI":31.25,"Conversion_Rate":0.01694915254237288,"SO_UV_SO":750,"SO_UV_Rev":600000,"SO_UV_UV":44250,"SO_UV_CVR":0.01694915254237288},{"LOB":"Watch","Traffic_Cost":40448.0,"Volume":790,"Revenue":1264000,"TTL_Cost":166848.0,"Net_Val":83424.0,"Gross_Val":250272.0,"Gross_Raw_Val":237632.0,"MDF_Actual_Val":12640.0,"Gross_Rate":0.198,"Gross_Raw_Rate":0.188,"MDF_Actual_Rate":0.01,"Finance_Source_Revenue":1264000,"TTL_Rate":0.132,"Net_Rate":0.066,"Traffic_Rate":0.032,"UV":48980,"Revenue_Share":0.1129579982126899,"ASP":1600.0,"Traffic_ROI":31.25,"Conversion_Rate":0.016129032258064516,"SO_UV_SO":790,"SO_UV_Rev":1264000,"SO_UV_UV":48980,"SO_UV_CVR":0.016129032258064516}],"actData":[{"LOB":"iPhone","Total_Act_Cost":108864.0,"Act_Expense_Rate":0.0384,"直降（活动补贴）_cost":38102.399999999994,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":21772.800000000003,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":21772.800000000003,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":16329.599999999999,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":10886.400000000001,"免息分期（商家贴息）-_pen":0.15},{"LOB":"iPad","Total_Act_Cost":73839.36000000002,"Act_Expense_Rate":0.039360000000000006,"直降（活动补贴）_cost":25843.776000000005,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":14767.872000000003,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":14767.872000000003,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":11075.904000000002,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":7383.9360000000015,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Mac","Total_Act_Cost":186076.80000000002,"Act_Expense_Rate":0.04032,"直降（活动补贴）_cost":65126.880000000005,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":37215.36000000001,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":37215.36000000001,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":27911.52,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":18607.680000000004,"免息分期（商家贴息）-_pen":0.15},{"LOB":"AirPods","Total_Act_Cost":24768.0,"Act_Expense_Rate":0.04128,"直降（活动补贴）_cost":8668.8,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":4953.6,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":4953.6,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":3715.2,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":2476.8,"免息分期（商家贴息）-_pen":0.15},{"LOB":"Watch","Total_Act_Cost":53391.36,"Act_Expense_Rate":0.04224,"直降（活动补贴）_cost":18686.976,"直降（活动补贴）_pen":0.6,"平台积分/积分抵扣_cost":10678.272,"平台积分/积分抵扣_pen":0.8,"以旧换新（商家出资）_cost":10678.272,"以旧换新（商家出资）_pen":0.25,"会员优惠 商家出资_cost":8008.704,"会员优惠 商家出资_pen":0.4,"免息分期（商家贴息）-_cost":5339.136,"免息分期（商家贴息）-_pen":0.15}]}],"notes":["本页所有名称、销量、收入、费用、费率与转化数据均为独立生成的合成示例。","收入等于示例销量乘单价，净利润等于毛利加示例 MDF 减总费用；各汇总由明细计算。","顶部总览固定显示五家合计，筛选改变下方对比范围。ROI 为收入费用比，不代表因果增量。"]};
+
+const stores = reportData.stores;
+const lobOrder = reportData.lobOrder;
+const heatmapLobOrder = reportData.heatmapLobOrder || lobOrder;
+const expenseOrder = reportData.expenseOrder;
+const activityOrder = reportData.activityOrder;
+
+const expenseColors = {
+  "平台佣金": "#2563eb",
+  "支付通道费": "#0891b2",
+  "平台积分服务费": "#84cc16",
+  "推广投流": "#f59e0b",
+  "淘宝客": "#a855f7",
+  "分期免息": "#ec4899",
+  "会员优惠": "#16a34a",
+  "补贴周转": "#64748b",
+  "物流": "#0f766e",
+  "资金成本": "#dc2626",
+  "运营成本": "#7c3aed"
+};
+
+const state = {
+  visible: new Set(stores.map(s => s.store)),
+  activeStore: stores[0].store,
+  chartMetric: "total_revenue",
+  sortKey: "total_revenue",
+  sortDir: -1,
+  heatMetric: "Net_Rate",
+  activityMetric: "Total_Act_Cost",
+  hiddenExpenses: new Set()
+};
+
+const metricDefs = {
+  total_revenue: { label: "确收金额", short: "确收", better: "high", format: fmtWan, get: s => s.summary.total_revenue },
+  total_net_profit: { label: "净利润", short: "净利", better: "high", format: fmtWan, signed: true, get: s => s.summary.total_net_profit },
+  overall_net_profit_rate: { label: "净利率", short: "净利率", better: "high", format: fmtPct, signed: true, get: s => s.summary.overall_net_profit_rate },
+  total_expense_rate: { label: "TTL费用率", short: "费用率", better: "low", format: fmtPct, get: s => s.summary.total_expense_rate },
+  total_act_rate: { label: "直降投入", short: "直降投入", better: "low", format: fmtPct, get: s => s.summary.total_act_rate },
+  overall_traffic_roi: { label: "投流 ROI", short: "投流ROI", better: "high", format: fmtRoi, get: s => s.summary.overall_traffic_roi },
+  total_volume: { label: "出库数量", short: "出库", better: "high", format: fmtInt, get: s => s.summary.total_volume },
+  asp: { label: "ASP", short: "ASP", better: "high", format: fmtYuan, get: s => s.summary.asp }
+};
+
+const lobMetricDefs = {
+  Revenue: { label: "确收金额", format: fmtWan, get: row => row.Revenue },
+  Volume: { label: "出库数量", format: fmtInt, get: row => row.Volume },
+  ASP: { label: "ASP", format: fmtYuan, get: row => row.ASP },
+  Net_Val: { label: "品类利润", format: fmtWan, signed: true, get: row => row.Net_Val },
+  Gross_Rate: { label: "毛利率", format: fmtPct, signed: true, get: row => row.Gross_Rate },
+  Net_Rate: { label: "净利率", format: fmtPct, signed: true, get: row => row.Net_Rate },
+  TTL_Rate: { label: "TTL费用率", format: fmtPct, get: row => row.TTL_Rate },
+  Act_Expense_Rate: { label: "直降投入", format: fmtPct, get: (row, act) => act?.Act_Expense_Rate || 0 },
+  Traffic_ROI: { label: "投流 ROI", format: fmtRoi, get: row => row.Traffic_ROI },
+  Conversion_Rate: { label: "CVR", format: fmtPct, get: row => row.SO_UV_CVR ?? row.Conversion_Rate }
+};
+
+const summaryColumns = [
+  ["store", "T2"],
+  ["total_revenue", "确收(万)"],
+  ["total_volume", "出库"],
+  ["asp", "ASP"],
+  ["total_act_cost", "活动(万)"],
+  ["total_act_rate", "直降投入"],
+  ["total_traffic_cost", "投流(万)"],
+  ["overall_traffic_roi", "投流ROI"],
+  ["overall_conversion_rate", "CVR"],
+  ["total_expense_rate", "TTL费率"],
+  ["total_net_profit", "净利润(万)"],
+  ["overall_net_profit_rate", "净利率"]
+];
+
+function fmtWan(value) {
+  return `${(value / 10000).toLocaleString("zh-CN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}万`;
+}
+
+function fmtPct(value) {
+  return `${(value * 100).toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+}
+
+function fmtPct1(value) {
+  return `${(value * 100).toLocaleString("zh-CN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+}
+
+function fmtInt(value) {
+  return Math.round(value).toLocaleString("zh-CN");
+}
+
+function fmtYuan(value) {
+  return `¥${Math.round(value).toLocaleString("zh-CN")}`;
+}
+
+function fmtRoi(value) {
+  return value ? `1:${Math.round(value).toLocaleString("zh-CN")}` : "-";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function tooltipMarkup(scope, label, rows) {
+  return `<div class="tooltip-title"><span>${escapeHtml(scope)}</span><b>${escapeHtml(label)}</b></div>
+    <div class="tooltip-grid">
+      ${rows.map(([name, value]) => `<span>${escapeHtml(name)}</span><strong>${value}</strong>`).join("")}
+    </div>`;
+}
+
+function moveTooltip(event) {
+  const tooltip = document.getElementById("chartTooltip");
+  if (!tooltip || !tooltip.classList) return;
+  const pad = 14;
+  const offset = 16;
+  const width = tooltip.offsetWidth || 260;
+  const height = tooltip.offsetHeight || 120;
+  const viewportWidth = window.innerWidth || 1280;
+  const viewportHeight = window.innerHeight || 720;
+  let x = (event.clientX || 0) + offset;
+  let y = (event.clientY || 0) + offset;
+  if (x + width + pad > viewportWidth) x = (event.clientX || 0) - width - offset;
+  if (y + height + pad > viewportHeight) y = (event.clientY || 0) - height - offset;
+  tooltip.style.transform = `translate3d(${Math.max(pad, x)}px, ${Math.max(pad, y)}px, 0)`;
+}
+
+function showTooltip(event, html) {
+  const tooltip = document.getElementById("chartTooltip");
+  if (!tooltip || !tooltip.classList) return;
+  tooltip.innerHTML = html;
+  tooltip.classList.add("is-visible");
+  moveTooltip(event);
+}
+
+function hideTooltip() {
+  const tooltip = document.getElementById("chartTooltip");
+  if (!tooltip || !tooltip.classList) return;
+  tooltip.classList.remove("is-visible");
+  tooltip.style.transform = "translate3d(-9999px, -9999px, 0)";
+}
+
+function metricValue(store, key) {
+  if (key === "total_act_cost") return store.summary.total_act_cost;
+  if (key === "total_traffic_cost") return store.summary.total_traffic_cost;
+  return metricDefs[key]?.get(store) ?? store.summary[key] ?? 0;
+}
+
+function formatSummaryValue(store, key) {
+  if (key === "store") return store.store;
+  if (key === "total_revenue" || key === "total_net_profit" || key === "total_act_cost" || key === "total_traffic_cost") return fmtWan(metricValue(store, key));
+  if (key === "total_expense_rate" || key === "overall_net_profit_rate" || key === "total_act_rate" || key === "overall_conversion_rate") return fmtPct(metricValue(store, key));
+  if (key === "total_volume") return fmtInt(metricValue(store, key));
+  if (key === "asp") return fmtYuan(metricValue(store, key));
+  if (key === "overall_traffic_roi") return fmtRoi(metricValue(store, key));
+  return metricValue(store, key).toLocaleString("zh-CN");
+}
+
+function visibleStores() {
+  return stores.filter(store => state.visible.has(store.store));
+}
+
+function byStore(name) {
+  return stores.find(store => store.store === name) || stores[0];
+}
+
+function lobRow(store, lob) {
+  return store.data.find(row => row.LOB === lob) || {};
+}
+
+function actRow(store, lob) {
+  return store.actData.find(row => row.LOB === lob) || {};
+}
+
+function bestStore(key, pool = stores) {
+  const def = metricDefs[key];
+  const dir = def?.better === "low" ? 1 : -1;
+  return [...pool].sort((a, b) => (metricValue(a, key) - metricValue(b, key)) * dir)[0];
+}
+
+function sortedVisibleByMetric(key = state.chartMetric) {
+  const def = metricDefs[key] || { better: "high" };
+  const defaultDir = def.better === "low" ? 1 : -1;
+  return visibleStores().sort((a, b) => (metricValue(a, key) - metricValue(b, key)) * defaultDir);
+}
+
+function colorForValue(value, store) {
+  if (state.chartMetric === "total_net_profit" || state.chartMetric === "overall_net_profit_rate") {
+    return value >= 0 ? "var(--green)" : "var(--red)";
+  }
+  return store.color;
+}
+
+function initControls() {
+  const storeFilters = document.getElementById("storeFilters");
+  storeFilters.innerHTML = stores.map(store => `
+    <label class="store-toggle">
+      <input type="checkbox" value="${store.store}" checked>
+      <span class="swatch" style="background:${store.color}"></span>${store.store}
+    </label>`).join("");
+  storeFilters.addEventListener("change", event => {
+    const input = event.target;
+    if (input.tagName !== "INPUT") return;
+    const checked = [...storeFilters.querySelectorAll("input:checked")].map(i => i.value);
+    if (!checked.length) {
+      input.checked = true;
+      return;
+    }
+    state.visible = new Set(checked);
+    if (!state.visible.has(state.activeStore)) state.activeStore = checked[0];
+    renderAll();
+  });
+
+  const metricSelector = document.getElementById("metricSelector");
+  metricSelector.innerHTML = Object.entries(metricDefs).map(([key, def]) => `
+    <button type="button" data-metric="${key}" class="${key === state.chartMetric ? "active" : ""}">${def.label}</button>`).join("");
+  metricSelector.addEventListener("click", event => {
+    const button = event.target.closest("button[data-metric]");
+    if (!button) return;
+    state.chartMetric = button.dataset.metric;
+    state.sortKey = state.chartMetric;
+    metricSelector.querySelectorAll("button").forEach(btn => btn.classList.toggle("active", btn === button));
+    renderAll();
+  });
+
+  const heatMetric = document.getElementById("heatMetric");
+  heatMetric.innerHTML = Object.entries(lobMetricDefs).map(([key, def]) => `<option value="${key}">${def.label}</option>`).join("");
+  heatMetric.value = state.heatMetric;
+  heatMetric.addEventListener("change", event => {
+    state.heatMetric = event.target.value;
+    renderHeatmap();
+  });
+
+  const activityMetric = document.getElementById("activityMetric");
+  activityMetric.innerHTML = [
+    `<option value="Total_Act_Cost">活动支出合计</option>`,
+    ...activityOrder.map(label => `<option value="${label}">${label.replace("（商家贴息）-", "商家贴息")}</option>`)
+  ].join("");
+  activityMetric.addEventListener("change", event => {
+    state.activityMetric = event.target.value;
+    renderActivity();
+  });
+}
+
+function renderPortfolio() {
+  const revenue = stores.reduce((sum, store) => sum + store.summary.total_revenue, 0);
+  const profit = stores.reduce((sum, store) => sum + store.summary.total_net_profit, 0);
+  const ttl = stores.reduce((sum, store) => sum + store.summary.total_ttl_cost, 0);
+  document.getElementById("portfolioRevenue").textContent = fmtWan(revenue);
+  document.getElementById("portfolioProfit").textContent = `合计净利润 ${fmtWan(profit)} · TTL费用率 ${fmtPct(ttl / revenue)}`;
+}
+
+function renderBars() {
+  const rows = sortedVisibleByMetric();
+  const def = metricDefs[state.chartMetric];
+  const values = rows.map(store => def.get(store));
+  let min = Math.min(0, ...values);
+  let max = Math.max(0, ...values);
+  if (max === min) max = min + 1;
+  const span = max - min;
+  const zero = ((0 - min) / span) * 100;
+
+  document.getElementById("barChart").innerHTML = rows.map(store => {
+    const value = def.get(store);
+    const pos = ((value - min) / span) * 100;
+    const left = Math.min(zero, pos);
+    const width = Math.abs(pos - zero);
+    const color = colorForValue(value, store);
+    return `<button type="button" class="bar-row ${store.store === state.activeStore ? "is-active" : ""}" data-store="${store.store}">
+      <span class="bar-label">${store.store}</span>
+      <span class="bar-track">
+        <span class="zero-line" style="--zero:${zero}%"></span>
+        <span class="bar-fill" style="--left:${left}%;--width:${width}%;--color:${color}"></span>
+      </span>
+      <span class="bar-value ${value < 0 ? "neg" : ""}">${def.format(value)}</span>
+    </button>`;
+  }).join("");
+
+  document.getElementById("barChart").querySelectorAll(".bar-row").forEach(row => {
+    row.addEventListener("click", () => {
+      state.activeStore = row.dataset.store;
+      renderActiveDependents();
+    });
+  });
+}
+
+function renderSummaryTable() {
+  const head = document.getElementById("summaryHead");
+  head.innerHTML = summaryColumns.map(([key, label]) => `
+    <th><button type="button" data-sort="${key}">${label}${state.sortKey === key ? (state.sortDir === -1 ? " ↓" : " ↑") : ""}</button></th>`).join("");
+  head.querySelectorAll("button[data-sort]").forEach(button => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.sort;
+      if (state.sortKey === key) state.sortDir *= -1;
+      else {
+        state.sortKey = key;
+        state.sortDir = key === "total_expense_rate" || key === "total_act_rate" ? 1 : -1;
+      }
+      renderSummaryTable();
+    });
+  });
+
+  const rows = visibleStores().sort((a, b) => {
+    if (state.sortKey === "store") return a.store.localeCompare(b.store, "zh-CN") * state.sortDir;
+    return (metricValue(a, state.sortKey) - metricValue(b, state.sortKey)) * state.sortDir;
+  });
+
+  document.getElementById("summaryBody").innerHTML = rows.map(store => `
+    <tr data-store="${store.store}" class="${store.store === state.activeStore ? "is-active" : ""}">
+      ${summaryColumns.map(([key]) => {
+        const value = formatSummaryValue(store, key);
+        const negative = ["total_net_profit", "overall_net_profit_rate"].includes(key) && metricValue(store, key) < 0;
+        const positive = ["total_net_profit", "overall_net_profit_rate"].includes(key) && metricValue(store, key) >= 0;
+        const cls = negative ? "neg" : positive ? "pos" : "";
+        if (key === "store") {
+          return `<td><span class="swatch" style="background:${store.color}"></span> ${value}</td>`;
+        }
+        return `<td class="${cls}">${value}</td>`;
+      }).join("")}
+    </tr>`).join("");
+
+  document.getElementById("summaryBody").querySelectorAll("tr[data-store]").forEach(row => {
+    row.addEventListener("click", () => {
+      state.activeStore = row.dataset.store;
+      renderActiveDependents();
+    });
+  });
+}
+
+function renderHeatmap() {
+  const def = lobMetricDefs[state.heatMetric];
+  const rows = visibleStores();
+  const values = [];
+  rows.forEach(store => {
+    heatmapLobOrder.forEach(lob => {
+      values.push(def.get(lobRow(store, lob), actRow(store, lob)) || 0);
+    });
+  });
+  const maxAbs = Math.max(...values.map(v => Math.abs(v)), 1);
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const diverging = def.signed;
+
+  const heatmap = document.getElementById("heatmap");
+  let html = `<div class="heat-head"></div>${heatmapLobOrder.map(lob => `<div class="heat-head">${lob}</div>`).join("")}`;
+  rows.forEach(store => {
+    html += `<div class="heat-store" data-store="${store.store}"><span class="swatch" style="background:${store.color}"></span>${store.store}</div>`;
+    heatmapLobOrder.forEach(lob => {
+      const row = lobRow(store, lob);
+      const act = actRow(store, lob);
+      const value = def.get(row, act) || 0;
+      const style = heatStyle(value, { diverging, maxAbs, max, min });
+      html += `<div class="heat-cell" data-store="${store.store}" style="${style}">
+        ${def.format(value)}
+        <small>${fmtPct1(row.Revenue_Share || 0)}收入占比</small>
+      </div>`;
+    });
+  });
+  heatmap.innerHTML = html;
+  heatmap.querySelectorAll("[data-store]").forEach(cell => {
+    cell.addEventListener("click", () => {
+      state.activeStore = cell.dataset.store;
+      renderActiveDependents();
+    });
+  });
+}
+
+function heatStyle(value, scale) {
+  if (scale.diverging) {
+    const intensity = Math.min(Math.abs(value) / scale.maxAbs, 1);
+    const alpha = 0.08 + intensity * 0.38;
+    return value >= 0 ? `background:rgba(22,163,74,${alpha})` : `background:rgba(220,38,38,${alpha})`;
+  }
+  const intensity = scale.max === scale.min ? 0.25 : Math.min(Math.max((value - scale.min) / (scale.max - scale.min), 0), 1);
+  const alpha = 0.08 + intensity * 0.35;
+  return `background:rgba(37,99,235,${alpha})`;
+}
+
+function renderScatter() {
+  const rows = visibleStores();
+  const xs = rows.map(s => s.summary.total_expense_rate);
+  const ys = rows.map(s => s.summary.overall_net_profit_rate);
+  const rs = rows.map(s => s.summary.total_revenue);
+  const minX = Math.min(...xs, 0.055);
+  const maxX = Math.max(...xs, 0.12);
+  const minY = Math.min(...ys, -0.075);
+  const maxY = Math.max(...ys, 0.02);
+  const minR = Math.min(...rs);
+  const maxR = Math.max(...rs);
+  const pad = { l: 62, r: 28, t: 24, b: 48 };
+  const w = 620;
+  const h = 360;
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+  const xMap = value => pad.l + ((value - minX) / (maxX - minX || 1)) * plotW;
+  const yMap = value => pad.t + plotH - ((value - minY) / (maxY - minY || 1)) * plotH;
+  const rMap = value => 8 + ((Math.sqrt(value) - Math.sqrt(minR)) / (Math.sqrt(maxR) - Math.sqrt(minR) || 1)) * 18;
+  const zeroY = yMap(0);
+
+  const grid = [0, .25, .5, .75, 1].map(t => {
+    const x = pad.l + t * plotW;
+    const y = pad.t + t * plotH;
+    const xv = minX + t * (maxX - minX);
+    const yv = maxY - t * (maxY - minY);
+    return `<line x1="${x}" y1="${pad.t}" x2="${x}" y2="${pad.t + plotH}" stroke="#e5e7eb"/>
+            <text x="${x}" y="${h - 18}" text-anchor="middle" fill="#667085" font-size="11">${fmtPct1(xv)}</text>
+            <line x1="${pad.l}" y1="${y}" x2="${pad.l + plotW}" y2="${y}" stroke="#e5e7eb"/>
+            <text x="${pad.l - 9}" y="${y + 4}" text-anchor="end" fill="#667085" font-size="11">${fmtPct1(yv)}</text>`;
+  }).join("");
+
+  const points = rows.map(store => {
+    const x = xMap(store.summary.total_expense_rate);
+    const y = yMap(store.summary.overall_net_profit_rate);
+    const r = rMap(store.summary.total_revenue);
+    const textY = y - r - 6 < 12 ? y + r + 16 : y - r - 6;
+    return `<g class="point" data-store="${store.store}">
+      <circle cx="${x}" cy="${y}" r="${r}" fill="${store.color}" fill-opacity=".78" stroke="#fff" stroke-width="2">
+        <title>${store.store} · TTL ${fmtPct(store.summary.total_expense_rate)} · 净利率 ${fmtPct(store.summary.overall_net_profit_rate)}</title>
+      </circle>
+      <text x="${x}" y="${textY}" text-anchor="middle">${store.store}</text>
+    </g>`;
+  }).join("");
+
+  const zeroLine = zeroY >= pad.t && zeroY <= pad.t + plotH
+    ? `<line x1="${pad.l}" y1="${zeroY}" x2="${pad.l + plotW}" y2="${zeroY}" stroke="#111827" stroke-dasharray="4 4" opacity=".35"/>`
+    : "";
+
+  const svg = document.getElementById("scatter");
+  svg.innerHTML = `
+    <rect x="0" y="0" width="${w}" height="${h}" fill="transparent"/>
+    ${grid}
+    ${zeroLine}
+    <line x1="${pad.l}" y1="${pad.t + plotH}" x2="${pad.l + plotW}" y2="${pad.t + plotH}" stroke="#98a2b3"/>
+    <line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t + plotH}" stroke="#98a2b3"/>
+    <text x="${pad.l + plotW / 2}" y="${h - 4}" text-anchor="middle" fill="#344054" font-size="12" font-weight="700">TTL费用率</text>
+    <text x="16" y="${pad.t + plotH / 2}" transform="rotate(-90 16 ${pad.t + plotH / 2})" text-anchor="middle" fill="#344054" font-size="12" font-weight="700">净利率</text>
+    ${points}`;
+  svg.querySelectorAll(".point").forEach(point => {
+    point.addEventListener("click", () => {
+      state.activeStore = point.dataset.store;
+      renderActiveDependents();
+    });
+  });
+}
+
+function renderExpense() {
+  hideTooltip();
+  const activeExpenses = expenseOrder.filter(key => !state.hiddenExpenses.has(key));
+  const singleExpense = activeExpenses.length === 1 ? activeExpenses[0] : null;
+  const legend = document.getElementById("expenseLegend");
+  legend.innerHTML = `
+    <div class="expense-tools">
+      <button type="button" class="legend-action ${state.hiddenExpenses.size ? "" : "active"}" data-expense-all="true">全部</button>
+      <label class="expense-solo-field">
+        <span>只看费用</span>
+        <select class="select expense-solo-select" id="expenseSoloSelect" aria-label="只看费用">
+          <option value="">选择费用</option>
+          ${expenseOrder.map(key => `<option value="${key}" ${singleExpense === key ? "selected" : ""}>${key}</option>`).join("")}
+        </select>
+      </label>
+    </div>
+    ${expenseOrder.map(key => `
+      <button type="button" class="legend-button ${state.hiddenExpenses.has(key) ? "muted" : "active"}" data-expense="${key}">
+        <span class="swatch" style="background:${expenseColors[key]}"></span> ${key}
+      </button>`).join("")}`;
+  legend.querySelectorAll("button[data-expense-all]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.hiddenExpenses = new Set();
+      renderExpense();
+    });
+  });
+  const soloSelect = document.getElementById("expenseSoloSelect");
+  soloSelect.value = singleExpense || "";
+  soloSelect.addEventListener("change", event => {
+    const key = event.target.value;
+    if (key) {
+      state.hiddenExpenses = new Set(expenseOrder.filter(item => item !== key));
+      renderExpense();
+    }
+  });
+  legend.querySelectorAll("button[data-expense]").forEach(button => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.expense;
+      if (state.hiddenExpenses.has(key)) state.hiddenExpenses.delete(key);
+      else state.hiddenExpenses.add(key);
+      renderExpense();
+    });
+    button.addEventListener("mouseenter", event => {
+      const key = button.dataset.expense;
+      const rows = visibleStores();
+      const value = rows.reduce((sum, store) => sum + (store.expenseComponents[key] || 0), 0);
+      const ttl = rows.reduce((sum, store) => sum + (store.summary.total_ttl_cost || 0), 0);
+      const revenue = rows.reduce((sum, store) => sum + (store.summary.total_revenue || 0), 0);
+      showTooltip(event, tooltipMarkup("当前可见店铺合计", key, [
+        ["金额", fmtWan(value)],
+        ["占TTL", fmtPct(ttl ? value / ttl : 0)],
+        ["占确收", fmtPct(revenue ? value / revenue : 0)]
+      ]));
+    });
+    button.addEventListener("mousemove", moveTooltip);
+    button.addEventListener("mouseleave", hideTooltip);
+  });
+
+  document.getElementById("expenseBars").innerHTML = visibleStores().map(store => {
+    const total = store.summary.total_ttl_cost || 1;
+    const segments = activeExpenses.map(key => {
+      const value = store.expenseComponents[key] || 0;
+      const width = Math.max((value / total) * 100, value > 0 ? 0.4 : 0);
+      const revenue = store.summary.total_revenue || 0;
+      const aria = `${store.store} ${key} ${fmtWan(value)} 占TTL ${fmtPct(value / total)} 占确收 ${fmtPct(revenue ? value / revenue : 0)}`;
+      return `<span class="stack-seg" tabindex="0" role="img" aria-label="${aria}" data-store="${store.store}" data-expense="${key}" data-value="${value}" data-ttl="${total}" data-revenue="${revenue}" style="width:${width}%;--color:${expenseColors[key]}"></span>`;
+    }).join("");
+    const singleValue = singleExpense ? (store.expenseComponents[singleExpense] || 0) : 0;
+    const percentLabel = singleExpense ? `<span class="stack-percent">${fmtPct1(singleValue / total)}</span>` : "";
+    return `<div class="stack-row" data-store="${store.store}">
+      <div class="bar-label"><span class="swatch" style="background:${store.color}"></span>${store.store}</div>
+      <div class="stack-track ${singleExpense ? "single-expense" : ""}">${segments}${percentLabel}</div>
+      <div class="bar-value">${fmtWan(total)}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("expenseBars").querySelectorAll(".stack-row[data-store]").forEach(row => {
+    row.addEventListener("click", () => {
+      state.activeStore = row.dataset.store;
+      renderActiveDependents();
+    });
+  });
+
+  document.getElementById("expenseBars").querySelectorAll(".stack-seg").forEach(seg => {
+    const build = () => {
+      const value = Number(seg.dataset.value || 0);
+      const ttl = Number(seg.dataset.ttl || 0);
+      const revenue = Number(seg.dataset.revenue || 0);
+      return tooltipMarkup(seg.dataset.store, seg.dataset.expense, [
+        ["金额", fmtWan(value)],
+        ["占TTL", fmtPct(ttl ? value / ttl : 0)],
+        ["占确收", fmtPct(revenue ? value / revenue : 0)]
+      ]);
+    };
+    seg.addEventListener("mouseenter", event => showTooltip(event, build()));
+    seg.addEventListener("mousemove", moveTooltip);
+    seg.addEventListener("mouseleave", hideTooltip);
+    seg.addEventListener("focus", event => showTooltip(event, build()));
+    seg.addEventListener("blur", hideTooltip);
+  });
+}
+
+function activityValue(store, label) {
+  if (label === "Total_Act_Cost") {
+    return store.summary.total_act_cost;
+  }
+  return store.actData.reduce((sum, row) => sum + (row[`${label}_cost`] || 0), 0);
+}
+
+function renderActivity() {
+  const rows = visibleStores();
+  const values = rows.map(store => activityValue(store, state.activityMetric));
+  const max = Math.max(...values, 1);
+  const total = values.reduce((sum, value) => sum + value, 0);
+  const label = state.activityMetric === "Total_Act_Cost"
+    ? "活动支出合计"
+    : state.activityMetric.replace("（商家贴息）-", "商家贴息");
+  const secondaryLabel = state.activityMetric === "Total_Act_Cost"
+    ? "投入率 = 活动金额 / 确收"
+    : "渗透率 = 参与活动 SO 占比";
+  document.getElementById("activityLegend").innerHTML = `
+    <span class="metric-chip"><b>主数字</b> 活动金额（万）</span>
+    <span class="metric-chip"><b>副数字</b> ${secondaryLabel}</span>
+    <span class="metric-chip"><b>条形</b> 当前活动金额相对最大店铺</span>`;
+  document.getElementById("activityBarsTotal").textContent = `${label} ${fmtWan(total)}`;
+
+  document.getElementById("activityBars").innerHTML = rows
+    .sort((a, b) => activityValue(b, state.activityMetric) - activityValue(a, state.activityMetric))
+    .map(store => {
+      const value = activityValue(store, state.activityMetric);
+      return `<div class="activity-row" data-store="${store.store}">
+        <div class="bar-label"><span class="swatch" style="background:${store.color}"></span>${store.store}</div>
+        <div class="activity-track"><span class="activity-fill" style="--width:${(value / max) * 100}%;--color:${store.color}"></span></div>
+        <div class="bar-value">${fmtWan(value)}</div>
+      </div>`;
+    }).join("");
+
+  document.getElementById("activityBars").querySelectorAll("[data-store]").forEach(row => {
+    row.addEventListener("click", () => {
+      state.activeStore = row.dataset.store;
+      renderActiveDependents();
+    });
+  });
+
+  renderActivityDetail();
+}
+
+function renderActivityDetail() {
+  const totalMode = state.activityMetric === "Total_Act_Cost";
+  const rows = visibleStores();
+  document.getElementById("activityDetailHead").innerHTML = `<tr>
+    <th>品类</th>
+    ${rows.map(store => `<th><span class="swatch" style="background:${store.color}"></span>${store.store}</th>`).join("")}
+  </tr>`;
+  document.getElementById("activityDetail").innerHTML = heatmapLobOrder.map(lob => {
+    return `<tr>
+      <td>${lob}</td>
+      ${rows.map(store => {
+        const row = actRow(store, lob);
+        const value = totalMode ? row.Total_Act_Cost || 0 : row[`${state.activityMetric}_cost`] || 0;
+        const rate = totalMode ? row.Act_Expense_Rate || 0 : row[`${state.activityMetric}_pen`] || 0;
+        return `<td class="activity-cell" style="--store-color:${store.color}">
+          <strong>${fmtWan(value)}</strong>
+          <span>${fmtPct(rate)}</span>
+        </td>`;
+      }).join("")}
+    </tr>`;
+  }).join("");
+}
+
+function renderTrafficSalesDetail() {
+  const rows = visibleStores();
+  document.getElementById("trafficSalesHead").innerHTML = `<tr>
+    <th>品类</th>
+    ${rows.map(store => `<th><span class="swatch" style="background:${store.color}"></span>${store.store}</th>`).join("")}
+  </tr>`;
+  document.getElementById("trafficSalesDetail").innerHTML = heatmapLobOrder.map(lob => {
+    return `<tr>
+      <td>${lob}</td>
+      ${rows.map(store => {
+        const row = lobRow(store, lob);
+        const cvr = row.SO_UV_CVR || 0;
+        return `<td class="activity-cell" style="--store-color:${store.color}">
+          <strong>${fmtWan(row.SO_UV_UV || 0)}</strong>
+          <span>${fmtInt(row.SO_UV_SO || 0)} SO · ${fmtPct(cvr)}</span>
+        </td>`;
+      }).join("")}
+    </tr>`;
+  }).join("");
+  renderTrafficSalesSummary(rows);
+}
+
+function renderTrafficSalesSummary(rows) {
+  const sorted = [...rows].sort((a, b) => (b.summary.total_uv || 0) - (a.summary.total_uv || 0));
+  const maxUv = Math.max(...sorted.map(store => store.summary.total_uv || 0), 1);
+  const totalUv = rows.reduce((sum, store) => sum + (store.summary.total_uv || 0), 0);
+  const totalSo = rows.reduce((sum, store) => sum + (store.summary.traffic_so || 0), 0);
+  document.getElementById("trafficSalesLegend").innerHTML = `
+    <span class="metric-chip"><b>主数字</b> UV（万）</span>
+    <span class="metric-chip"><b>副数字</b> SO / CVR</span>
+    <span class="metric-chip"><b>条形</b> 店铺 UV 相对最大值</span>`;
+  document.getElementById("trafficSalesSummary").innerHTML = `
+    <div class="traffic-summary-head">
+      <span>UV 效率</span>
+      <span>合计 UV ${fmtWan(totalUv)} · SO ${fmtInt(totalSo)}</span>
+    </div>
+    ${sorted.map(store => {
+      const uv = store.summary.total_uv || 0;
+      const so = store.summary.traffic_so || 0;
+      const cvr = store.summary.overall_conversion_rate || 0;
+      return `<div class="traffic-row" data-store="${store.store}">
+        <div class="bar-label"><span class="swatch" style="background:${store.color}"></span>${store.store}</div>
+        <div class="traffic-track"><span class="traffic-fill" style="--width:${(uv / maxUv) * 100}%;--color:${store.color}"></span></div>
+        <div class="traffic-value"><strong>${fmtWan(uv)}</strong><span>${fmtInt(so)} SO · ${fmtPct(cvr)}</span></div>
+      </div>`;
+    }).join("")}`;
+  document.getElementById("trafficSalesSummary").querySelectorAll("[data-store]").forEach(row => {
+    row.addEventListener("click", () => {
+      state.activeStore = row.dataset.store;
+      renderActiveDependents();
+    });
+  });
+}
+
+function rankInStores(store, getter, direction = "desc") {
+  const sorted = [...stores].sort((a, b) => {
+    const delta = (getter(a) || 0) - (getter(b) || 0);
+    return direction === "asc" ? delta : -delta;
+  });
+  return sorted.findIndex(item => item.store === store.store) + 1;
+}
+
+function bestLob(store, getter, direction = "desc") {
+  const rows = heatmapLobOrder
+    .map(lob => lobRow(store, lob))
+    .filter(row => row && row.LOB);
+  return rows.sort((a, b) => {
+    const delta = (getter(a) || 0) - (getter(b) || 0);
+    return direction === "asc" ? delta : -delta;
+  })[0] || {};
+}
+
+function renderStoreInsights(rows) {
+  document.getElementById("storeInsights").innerHTML = rows.map(store => {
+    const revenueRank = rankInStores(store, item => item.summary.total_revenue, "desc");
+    const profitRank = rankInStores(store, item => item.summary.total_net_profit, "desc");
+    const marginRank = rankInStores(store, item => item.summary.overall_net_profit_rate, "desc");
+    const cvrRank = rankInStores(store, item => item.summary.overall_conversion_rate, "desc");
+    const scaleLob = bestLob(store, row => row.Revenue, "desc");
+    const profitLob = bestLob(store, row => row.Net_Val, "desc");
+    const pressureLob = bestLob(store, row => row.Net_Val, "asc");
+    const profitText = store.summary.total_net_profit >= 0 ? "盈利" : "亏损";
+    return `<article class="store-insight" data-store="${store.store}" style="border-top-color:${store.color}">
+      <h3>
+        <span class="store-insight-name"><span class="swatch" style="background:${store.color}"></span>${store.store}</span>
+        <span class="store-status">${profitText}</span>
+      </h3>
+      <div class="store-mini-grid">
+        <span>确收排名<b>#${revenueRank}</b></span>
+        <span>净利润排名<b>#${profitRank}</b></span>
+        <span>净利率排名<b>#${marginRank}</b></span>
+        <span>CVR排名<b>#${cvrRank}</b></span>
+      </div>
+      <p>主力品类：${scaleLob.LOB || "-"}（确收 ${fmtWan(scaleLob.Revenue || 0)}）。</p>
+      <p>利润支撑：${profitLob.LOB || "-"}（净利润 ${fmtWan(profitLob.Net_Val || 0)}）。</p>
+      <p>利润压力：${pressureLob.LOB || "-"}（净利润 ${fmtWan(pressureLob.Net_Val || 0)}）。</p>
+    </article>`;
+  }).join("");
+}
+
+function renderInsights() {
+  const rows = visibleStores();
+  const revenueLeader = bestStore("total_revenue", rows);
+  const profitLeader = bestStore("total_net_profit", rows);
+  const efficient = bestStore("total_expense_rate", rows);
+  const expenseHeavy = [...rows].sort((a, b) => b.summary.total_expense_rate - a.summary.total_expense_rate)[0];
+  const lossStores = rows.filter(s => s.summary.total_net_profit < 0).map(s => s.store);
+  const roiLeader = bestStore("overall_traffic_roi", rows);
+  const activityHeavy = [...rows].sort((a, b) => b.summary.total_act_rate - a.summary.total_act_rate)[0];
+
+  document.getElementById("insights").innerHTML = `
+    <article class="insight">
+      <h3>规模与盈利不完全同步</h3>
+      <p><strong>${revenueLeader.store}</strong>确收最高（${fmtWan(revenueLeader.summary.total_revenue)}），但净利润第一是<strong>${profitLeader.store}</strong>（${fmtWan(profitLeader.summary.total_net_profit)}）。</p>
+    </article>
+    <article class="insight">
+      <h3>费用率分化明显</h3>
+      <p><strong>${efficient.store}</strong> TTL费用率最低（${fmtPct(efficient.summary.total_expense_rate)}），<strong>${expenseHeavy.store}</strong>费用率最高（${fmtPct(expenseHeavy.summary.total_expense_rate)}）。</p>
+    </article>
+    <article class="insight">
+      <h3>投流杠杆与活动压力</h3>
+      <p><strong>${roiLeader.store}</strong>投流 ROI 最高（${fmtRoi(roiLeader.summary.overall_traffic_roi)}）；<strong>${activityHeavy.store}</strong>直降投入最高（${fmtPct(activityHeavy.summary.total_act_rate)}）。亏损店铺：${lossStores.join("、") || "无"}。</p>
+    </article>`;
+
+  renderStoreInsights(rows);
+}
+
+function renderActiveDependents() {
+  renderBars();
+  renderSummaryTable();
+  renderHeatmap();
+  renderScatter();
+  renderActivityDetail();
+  renderTrafficSalesDetail();
+}
+
+function renderAll() {
+  renderPortfolio();
+  renderBars();
+  renderSummaryTable();
+  renderHeatmap();
+  renderScatter();
+  renderExpense();
+  renderActivity();
+  renderTrafficSalesDetail();
+  renderInsights();
+}
+
+initControls();
+renderAll();
+</script>
+</body>
+</html>
