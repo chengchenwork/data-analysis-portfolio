@@ -1,0 +1,1 @@
+window.CAMPUS_KEY_DATES={"synthetic":true,"events":[{"semester":"S1 2024","semesterIndex":0,"label":"Illustrative campus closure","start":"2024-04-15","end":"2024-04-15","affectedWeeks":[7],"excludedRows":216},{"semester":"S1 2025","semesterIndex":1,"label":"Illustrative campus closure","start":"2025-04-14","end":"2025-04-14","affectedWeeks":[7],"excludedRows":216}]};

@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "seed": 24092026,
+  "sourceRows": 25920,
+  "rooms": 24,
+  "buildings": 8,
+  "periods": [
+    "S1 2024",
+    "S1 2025"
+  ],
+  "privateInputs": [],
+  "map": "Original fictional SVG schematic",
+  "purpose": "Interaction and metric demonstration only; no university conclusions."
+}

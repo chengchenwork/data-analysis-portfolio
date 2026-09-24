@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Fictional campus schematic, not a geographical map">
+<rect width="1200" height="800" fill="#f6f7f2"/>
+<path d="M0 358H1200M315 0V800M605 0V800M885 0V800" stroke="#dfe4e1" stroke-width="28"/>
+<path d="M0 358H1200M315 0V800M605 0V800M885 0V800" stroke="#fff" stroke-width="16"/>
+<rect x="30" y="393" width="1140" height="36" rx="18" fill="#d5e1ca"/>
+<text x="600" y="417" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#5d7656">THE GREEN WALK</text>
+<text x="38" y="49" font-family="sans-serif" font-size="19" letter-spacing="3" fill="#536967">ILLUSTRATIVE CAMPUS</text>
+<text x="38" y="765" font-family="sans-serif" font-size="16" fill="#697974">Fictional buildings · no geographic scale · synthetic portfolio demo</text>
+<path d="M80,110h200v175h-200Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="180.0" y="313" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Cedar Hall</text>
+<path d="M355,100h210v72.0h-63.0v78.0h-147.0Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="460.0" y="278" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Willow Studios</text>
+<path d="M655,125h175v155h-175Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="742.5" y="308" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Maple House</text>
+<path d="M915,100h205v91.2h-61.5v98.8h-143.5Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="1017.5" y="318" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Birch Centre</text>
+<path d="M90,465h180v91.2h-54.0v98.8h-125.99999999999999Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="180.0" y="683" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Elm Pavilion</text>
+<path d="M365,495h200v150h-200Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="465.0" y="673" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Rowan Hall</text>
+<path d="M655,465h200v96.0h-60.0v104.0h-140.0Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="755.0" y="693" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Aspen House</text>
+<path d="M945,495h155v140h-155Z" fill="#d3dcd8" stroke="#9caeaa" stroke-width="3"/>
+<text x="1022.5" y="663" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#465e60">Pine Studios</text>
+</svg>

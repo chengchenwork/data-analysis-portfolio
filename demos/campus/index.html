@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Interactive campus teaching-space utilisation, attendance and energy dashboard." />
+    <meta name="theme-color" content="#101012" />
+    <title>Campus Space Pulse · Synthetic portfolio demo</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101012'/%3E%3Cpath d='M7 22V10h4v12H7Zm7 0V6h4v16h-4Zm7 0v-8h4v8h-4Z' fill='%230066cc'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="apple-theme.css" />
+    <link rel="stylesheet" href="teacher-dashboard.css" />
+    <link rel="stylesheet" href="campus-explorer.css" />
+    <link rel="stylesheet" href="reading-guide.css" />
+    <link rel="stylesheet" href="portfolio-demo.css" />
+  </head>
+  <body>
+    <aside class="demo-notice" aria-label="Public demo disclosure"><div><strong>Synthetic portfolio demo</strong><span>All buildings, rooms, records and dates are fictional examples. Not a University dataset.</span></div><a href="../../campus.html">Project story ↗</a></aside>
+    <a class="skip-link" href="#dashboard-main">Skip to dashboard</a>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+    <div class="teacher-shell">
+      <header class="teacher-hero">
+        <div class="hero-topline">
+          <a class="brand-lockup" href="#dashboard-main" aria-label="Campus Space Pulse home">
+            <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>Campus Space Pulse</span>
+          </a>
+          <div class="hero-actions">
+            <span class="source-status"><i aria-hidden="true"></i><span id="sourceSummary">Loading source</span></span>
+            <button class="quiet-button" id="methodButton" type="button">Definitions & methods</button>
+          </div>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy" data-reveal>
+            <p class="eyebrow">Teaching spaces · use and planning</p>
+            <h1>See how campus<br />rooms are used.</h1>
+            <p class="hero-lead">Compare room capacity, planned class sizes and recorded people counts. Find spaces and times worth reviewing.</p>
+          </div>
+          <aside class="hero-snapshot" aria-label="Active portfolio snapshot" data-reveal>
+            <p>Average room use · current selection</p>
+            <strong id="heroUtilisation">—</strong>
+            <span id="heroUtilisationNote">Preparing operational room-hours</span>
+            <div class="hero-meter" aria-hidden="true"><i id="heroMeter"></i></div>
+            <dl>
+              <div><dt>Rooms</dt><dd id="heroRooms">—</dd></div>
+              <div><dt>Buildings</dt><dd id="heroBuildings">—</dd></div>
+              <div><dt>Period</dt><dd id="heroPeriod">—</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </header>
+
+      <nav class="view-navigation" aria-label="Dashboard views">
+        <div id="dashboardViews" role="tablist" aria-label="Analysis views">
+          <button type="button" role="tab" data-view="overview" aria-controls="view-overview" class="active">Campus Overview</button>
+          <button type="button" role="tab" data-view="map" aria-controls="view-map">Campus Map</button>
+          <button type="button" role="tab" data-view="temporal" aria-controls="view-temporal">Temporal Patterns</button>
+          <button type="button" role="tab" data-view="diagnostics" aria-controls="view-diagnostics">Room &amp; Theatre Diagnostics</button>
+          <button type="button" role="tab" data-view="energy" aria-controls="view-energy">Attendance &amp; Energy</button>
+        </div>
+      </nav>
+
+      <section class="filter-deck" aria-labelledby="filterHeading">
+        <div class="filter-heading">
+          <div><p class="section-kicker" id="filterHeading">Shared filters</p><p id="filterSummary">Preparing the active view...</p></div>
+          <button class="reset-button" id="resetFilters" type="button">Reset filters</button>
+        </div>
+        <div class="filter-grid">
+          <fieldset class="filter-field semester-field"><legend>Semester</legend><div id="semesterSegment"><select id="semesterSelect" aria-label="Semester"></select></div></fieldset>
+          <label class="filter-field"><span>Teaching week</span><select id="weekFilter"><option value="all">All teaching weeks</option></select></label>
+          <label class="filter-field"><span>Space category</span><select id="categoryFilter"><option value="all">All space categories</option></select></label>
+          <label class="filter-field contextual-filter" id="typeFilterField" hidden><span>Room type</span><select id="typeFilter"><option value="all">All room types</option></select></label>
+          <label class="filter-field contextual-filter" id="locationFilterField" hidden><span>Location</span><select id="locationFilter"><option value="all">All locations</option></select></label>
+          <fieldset class="filter-field adjustment-field"><legend>Key-date treatment</legend><div class="segment" id="holidayAdjustment"><button type="button" data-mode="adjusted" class="active" aria-pressed="true">Adjusted</button><button type="button" data-mode="observed" aria-pressed="false">Observed</button></div></fieldset>
+        </div>
+        <div class="key-date-note" id="keyDateContext" aria-live="polite"><span aria-hidden="true"></span><p id="keyDateText">Adjusted mode excludes the illustrative closure day.</p></div>
+      </section>
+
+      <p class="period-coverage" id="periodCoverage" aria-live="polite"></p>
+      <section class="type-profile" id="typeProfile" aria-labelledby="typeProfileTitle" hidden>
+        <div><p class="section-kicker">Demo room type</p><h2 id="typeProfileTitle">Room type</h2></div>
+        <p id="typeProfileSummary"></p><div class="type-profile-meta" id="typeProfileMeta"></div>
+      </section>
+
+      <main id="dashboard-main">
+        <section id="view-map" class="dashboard-view" role="tabpanel" tabindex="0" aria-label="Campus Map" hidden></section>
+        <section id="view-overview" class="dashboard-view active" role="tabpanel" tabindex="0" aria-label="Campus Overview">
+          <header class="view-heading" data-reveal><div><p class="section-kicker">Campus at a glance</p><h2>Campus Overview</h2></div><p>See which buildings are used most, how use changes over the semester, and which room categories need a closer look.</p></header>
+          <div class="metric-grid" aria-label="Campus overview metrics">
+            <article class="metric-card metric-primary" data-reveal><p>Average room use</p><strong id="kpiOccupancy">—</strong><span id="kpiOccupancyNote">Operational room-hours</span></article>
+            <article class="metric-card" data-reveal><p>Most utilised building</p><strong class="metric-name" id="mostBuilding">—</strong><span id="mostBuildingNote">Operational maximum</span></article>
+            <article class="metric-card" data-reveal><p>Least utilised building</p><strong class="metric-name" id="leastBuilding">—</strong><span id="leastBuildingNote">Operational maximum</span></article>
+            <article class="metric-card metric-warning" data-reveal><p>Buildings with peaks below 25%</p><strong id="under25Value">—</strong><span id="under25Summary">Calculating buildings</span></article>
+          </div>
+          <div class="overview-grid">
+            <article class="panel building-panel" data-reveal>
+              <header class="panel-header"><div><p class="panel-kicker">Concurrent occupancy</p><h3>Which buildings are busiest?</h3><p>Compare average use with the busiest recorded hour. Max / Average changes the ranking.</p></div><div class="segment segment-small" id="buildingMetric" aria-label="Building ranking metric"><button type="button" data-metric="max" class="active">Max</button><button type="button" data-metric="average">Average</button></div></header>
+              <div class="table-scroll table-scroll-buildings"><table class="data-table"><thead><tr><th>Building</th><th>Average</th><th>Highest hourly use</th><th>Peak people / seats</th></tr></thead><tbody id="buildingTableBody"></tbody></table></div>
+            </article>
+            <article class="panel weekly-panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Teaching period</p><h3>How does room use change each week?</h3><p>Average room use across the semester. This chart keeps all teaching weeks visible.</p></div><strong class="panel-stat" id="weeklyPeak">—</strong></header><div class="chart-frame" id="weeklyChart"></div></article>
+            <article class="panel category-panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Space mix</p><h3>Which types of space are used most?</h3><p>Select a category bar to focus every view.</p></div></header><div class="category-bars" id="categoryBars"></div></article>
+          </div>
+        </section>
+
+        <section id="view-temporal" class="dashboard-view" role="tabpanel" tabindex="0" aria-label="Temporal Patterns" hidden>
+          <header class="view-heading" data-reveal><div><p class="section-kicker">Busy days and hours</p><h2>Temporal Patterns</h2></div><p>Find peak weekdays and hours at building and lecture-theatre level.</p></header>
+          <article class="panel heatmap-workspace" data-reveal>
+            <header class="panel-header temporal-header"><div><p class="panel-kicker">Operational maximum</p><h3 id="temporalTitle">Building × weekday</h3><p id="temporalDescription">Maximum concurrent occupancy for each building and weekday.</p></div><div class="segment temporal-modes" id="temporalMode" aria-label="Temporal heatmap mode"><button type="button" data-mode="building-weekday" class="active">Building · Day</button><button type="button" data-mode="theatre-weekday">Theatre · Day</button><button type="button" data-mode="building-hour">Building · Hour</button><button type="button" data-mode="theatre-hour">Theatre · Hour</button></div></header>
+            <div class="temporal-callout" id="temporalPeak">Finding the strongest temporal pattern...</div>
+            <div class="heat-scale" aria-label="Heatmap utilisation scale"><span>0%</span><i></i><span>150%</span></div>
+            <div class="matrix-scroll" id="temporalHeatmap"></div>
+          </article>
+        </section>
+
+        <section id="view-diagnostics" class="dashboard-view" role="tabpanel" tabindex="0" aria-label="Room and Theatre Diagnostics" hidden>
+          <header class="view-heading" data-reveal><div><p class="section-kicker">Room planning checks</p><h2>Room &amp; Theatre Diagnostics</h2></div><p>Check whether planned classes fit their rooms, then investigate unusually high counter readings.</p></header>
+          <div class="diagnostic-summary metric-grid">
+            <article class="metric-card" data-reveal><p>Rooms with planned-size data</p><strong id="gapRoomCount">—</strong><span>Capacity and planned size are available</span></article>
+            <article class="metric-card metric-primary" data-reveal><p>Planned seats filled</p><strong id="plannedFitValue">—</strong><span id="plannedFitNote">Weighted by scheduled room-hours</span></article>
+            <article class="metric-card metric-warning" data-reveal><p>Booked hours with too few seats</p><strong id="overplannedValue">—</strong><span id="overplannedNote">Scheduled room-hours</span></article>
+            <article class="metric-card metric-danger" data-reveal><p>Readings to check</p><strong id="outlierCount">—</strong><span>Raw observations above 150%</span></article>
+          </div>
+          <div class="diagnostics-grid">
+            <article class="panel timetable-panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Timetable fit</p><h3>Which rooms are too large or too small for the plan?</h3><p>Rooms furthest from 100% planned fill appear first. Positive spare seats mean room to spare; negative values mean too few seats.</p></div></header><div class="table-scroll"><table class="data-table"><thead><tr><th>Location</th><th>Scheduled room-hours</th><th>Room capacity</th><th>Average planned students</th><th>Spare seats in the plan</th><th>Planned seats filled</th><th>Fewer people than planned / hour</th></tr></thead><tbody id="timetableTableBody"></tbody></table></div></article>
+            <article class="panel outlier-panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Raw exception log</p><h3>Which readings exceed 150% of capacity?</h3><p id="outlierTableNote">Kept for audit; excluded from operational analytics.</p></div></header><div class="table-scroll table-scroll-outliers"><table class="data-table"><thead><tr><th>Location code</th><th>Room</th><th>Actual / capacity</th><th>Max occupancy</th><th>Time recorded</th></tr></thead><tbody id="outlierTableBody"></tbody></table></div></article>
+            <article class="panel category-diagnostic" data-reveal><header class="panel-header"><div><p class="panel-kicker">Room scale</p><h3>Which types of space are used most?</h3><p>Compare the source room categories. This chart uses the shared filters, not the individual room selection.</p></div></header><div class="category-bars" id="diagnosticCategoryBars"></div></article>
+          </div>
+        </section>
+
+        <section id="view-energy" class="dashboard-view" role="tabpanel" tabindex="0" aria-label="Attendance and Energy" hidden>
+          <header class="view-heading" data-reveal><div><p class="section-kicker">Booked space versus actual counts</p><h2>Attendance &amp; Energy</h2></div><p>Find bookings with low recorded people counts and unused theatre seats. These are clues for review, not measured energy savings.</p></header>
+          <div class="metric-grid">
+            <article class="metric-card metric-danger" data-reveal><p>Near-empty booked hours</p><strong id="ghostCount">—</strong><span id="ghostShare">—</span></article>
+            <article class="metric-card" data-reveal><p>People counted vs registered size</p><strong id="attendanceReliability">—</strong><span>Average hourly count-to-registration ratio</span></article>
+            <article class="metric-card metric-energy" data-reveal><p>Unused theatre seat-hours</p><strong id="energyEmptySeats">—</strong><span id="energyRate">—</span></article>
+            <article class="metric-card" data-reveal><p>Hours with class-type labels</p><strong id="activityCoverageValue">—</strong><span id="activityCoverage">Calculating coverage</span></article>
+          </div>
+          <div class="energy-grid">
+            <article class="panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Near-zero attendance</p><h3>Which rooms have near-empty bookings?</h3><p>Fewer than 10 people counted per 100 registered. Counts are room-hours, not distinct classes.</p></div></header><div class="rank-list" id="ghostRoomList"></div></article>
+            <article class="panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Lecture theatres</p><h3>Where are booked theatre seats left unused?</h3><p>Adds unused seats across eligible booked hours. Larger rooms and longer bookings can produce higher totals.</p></div></header><div class="rank-list" id="energyRoomList"></div></article>
+            <article class="panel correlation-panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Registered vs actual</p><h3>How do counts compare with class size?</h3><p>Compare class types using count-to-registration ratios. Use the ? buttons to interpret near-empty share and correlation.</p></div></header><div class="table-scroll"><table class="data-table"><thead><tr><th>Activity type</th><th>Eligible hours</th><th>Count / registered</th><th>Near-empty share</th><th>Size–count correlation</th></tr></thead><tbody id="activityTableBody"></tbody></table></div></article>
+            <article class="panel correlation-panel" data-reveal><header class="panel-header"><div><p class="panel-kicker">Space context</p><h3>Does the pattern differ by room category?</h3><p>Compare the same attendance indicators across room categories; check how many eligible hours support each row.</p></div></header><div class="table-scroll"><table class="data-table"><thead><tr><th>Space category</th><th>Eligible hours</th><th>Count / registered</th><th>Near-empty share</th><th>Size–count correlation</th></tr></thead><tbody id="spaceCorrelationBody"></tbody></table></div></article>
+          </div>
+          <aside class="coverage-note" data-reveal><div><p class="section-kicker">Data boundary</p><h3>Timetable subject context is available in Campus Map.</h3></div><p id="courseLimitation">Synthetic timetable summaries add fictional subject, faculty and planned-size context. They illustrate planning, not verified course attendance.</p></aside>
+        </section>
+      </main>
+
+      <footer><p id="sourceNote">Source loading...</p><p>Operational threshold: ≤150%. Ghost threshold: actual / registered &lt;10%.</p></footer>
+    </div>
+
+    <div class="tooltip" id="chartTooltip" role="status" aria-hidden="true"></div>
+    <dialog id="methodDialog">
+      <div class="dialog-header"><div><p class="section-kicker">Method &amp; data notes</p><h2>How to read this dashboard</h2></div><button class="dialog-close" id="closeMethod" type="button" aria-label="Close dialog">×</button></div>
+      <div class="dialog-body">
+        <section><h3>Room use (operational utilisation)</h3><p>Room utilisation is <code>max_headcount_hourly / Room Capacity</code>. Observations above 150% are excluded from operational rankings, peaks, heatmaps, attendance and energy summaries, and retained in the outlier log.</p></section>
+        <section><h3>Building metrics</h3><p>Actual people and available seats are first summed across valid concurrent rooms in a building-hour. Average utilisation is the mean of those hourly rates; operational max is the highest rate.</p></section>
+        <section><h3>Timetable fit, attendance and energy</h3><p>Planned room fill is <code>Planned Class Size ÷ Room Capacity</code>; spare planned seats are <code>Room Capacity − Planned Class Size</code>. These are scheduled room-hour measures because the source has no stable class-session identifier. Attendance shortfall remains <code>max(Planned Class Size − Actual Headcount, 0)</code>. A ghost scheduled room-hour has registered students above zero and actual / registered below 10%. Empty seat-hours are <code>max(Room Capacity − Actual Headcount, 0) × 1 hour</code> for scheduled lecture theatres.</p></section>
+        <section><h3>Key dates and coverage</h3><p>Both illustrative semesters contain 12 complete weeks. Adjusted mode excludes a fictional closure day in week 7; Observed restores it. The calendar panel includes all synthetic records, independent of the week filter. Timetable context describes planned size, not verified attendance.</p></section>
+      </div>
+    </dialog>
+
+    <script src="data/dashboard-data.js"></script>
+    <script src="data/key-date-data.js"></script>
+    <script src="data/space-type-info.js"></script>
+    <script src="data/teacher-insights-data.js"></script>
+    <script src="vendor/gsap.min.js"></script>
+    <script src="teacher-metrics.js"></script>
+    <script src="data/campus-context.js"></script>
+    <script src="data/campus-map.js"></script>
+    <script src="data/campus-footprints.js"></script>
+    <script src="campus-heatmap.js"></script>
+    <script src="campus-explorer.js"></script>
+    <script src="app.js" defer></script>
+    <script src="reading-guide.js" defer></script>
+  </body>
+</html>
